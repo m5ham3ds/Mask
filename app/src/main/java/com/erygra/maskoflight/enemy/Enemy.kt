@@ -144,6 +144,7 @@ data class EnemyAttack(
     val type: AttackType,
     val damage: Int,
     val range: Float,
+    val minRange: Float = 0f,
     val aoeRadius: Float = 0f,
     val cooldownMs: Long = 2000L,
     val windupMs: Long = 500L,      // وقت التحضير (telegraph)
@@ -238,6 +239,8 @@ data class EnemyDefinition(
     val lootTable: LootTable,
     
     // القدرات الخاصة
+    val canPatrol: Boolean = true,
+    val canMoveWhileAttacking: Boolean = false,
     val canFly: Boolean = false,
     val canClimb: Boolean = false,
     val canSwim: Boolean = false,
@@ -262,8 +265,9 @@ data class EnemyDefinition(
 data class Enemy(
     val id: String,                     // معرّف فريد
     val definition: EnemyDefinition,
-    val stats: EnemyStats,
+    var stats: EnemyStats,
     val position: EnemyPosition,
+    var level: Int = 1,
     
     // الحالة
     var currentState: EnemyState = EnemyState.IDLE,
@@ -275,6 +279,7 @@ data class Enemy(
     
     // التأثيرات
     val activeEffects: MutableList<EnemyEffect> = mutableListOf(),
+    val attackCooldowns: MutableMap<String, Long> = mutableMapOf(),
     
     // البيانات المخصصة
     val customData: MutableMap<String, Any> = mutableMapOf()
@@ -347,7 +352,8 @@ enum class EnemyEffectType {
     FEAR,           // خوف (يجبره على الهروب)
     WEAKNESS,       // ضعف (-damage)
     ARMOR_BREAK,    // كسر الدرع
-    MARKED          // محدد (يظهر على الخريطة)
+    MARKED,         // محدد (يظهر على الخريطة)
+    INVULNERABLE    // لا يقهر
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1404,6 +1410,7 @@ object EnemyFactory {
             definition = definition,
             stats = scaledStats,
             position = EnemyPosition(x = x, y = y),
+            level = level,
             spawnPoint = x to y
         )
     }
@@ -1556,7 +1563,7 @@ fun Enemy.takeDamage(damage: Int, source: String = ""): Int {
     val hpLost = stats.currentHp - newHp
     
     // تحديث الإحصائيات (يجب أن يتم عبر StateFlow في الواقع)
-    // stats = stats.copy(currentHp = newHp)
+    stats = stats.copy(currentHp = newHp)
     
     lastDamagedTime = System.currentTimeMillis()
     
@@ -1568,7 +1575,7 @@ fun Enemy.takeDamage(damage: Int, source: String = ""): Int {
  */
 fun Enemy.heal(amount: Int) {
     val newHp = min(stats.maxHp, stats.currentHp + amount)
-    // stats = stats.copy(currentHp = newHp)
+    stats = stats.copy(currentHp = newHp)
 }
 
 /**

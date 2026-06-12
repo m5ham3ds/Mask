@@ -413,6 +413,10 @@ object ApiConfig {
     const val BACKEND_RETRY_DELAY_MS = 1000L
 }
 
+object ParticleConfig {
+    const val MAX_PARTICLES = 1000
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // GameConfig Wrapper — لضمان التوافق مع الكود القديم والجديد
 // ─────────────────────────────────────────────────────────────────────────────

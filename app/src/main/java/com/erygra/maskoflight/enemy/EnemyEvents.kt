@@ -5,6 +5,7 @@ import com.erygra.maskoflight.core.EventBus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.filterNotNull
 
 /**
  * ════════════════════════════════════════════════════════════════════════════════
@@ -419,7 +420,7 @@ sealed class EnemyAnalyticsEvent {
  * أحداث الإنجازات
  * Achievement trigger events
  */
-sealed class EnemyAchievementEvent {
+sealed class EnemyAchievementEvent : GameEvent() {
     /**
      * هزيمة Boss دون ضرر
      * Defeated boss without taking damage
@@ -636,7 +637,7 @@ object EnemyEventUtils {
         return this.map { event ->
             when (event) {
                 is GameEvent.Enemy.Died -> ++streak
-                is GameEvent.Player.Died -> {
+                is GameEvent.PlayerDied -> {
                     streak = 0
                     0
                 }
@@ -734,13 +735,15 @@ class EnemyEventListener {
         type: EnemyType,
         callback: (GameEvent.Enemy.Died) -> Unit
     ) {
-        EventBus.events
-            .filterByEnemyType(type)
-            .collect { event ->
-                if (event is GameEvent.Enemy.Died) {
-                    callback(event)
+        with(EnemyEventUtils) {
+            EventBus.events
+                .filterByEnemyType(type)
+                .collect { event ->
+                    if (event is GameEvent.Enemy.Died) {
+                        callback(event)
+                    }
                 }
-            }
+        }
     }
     
     /**
@@ -778,13 +781,15 @@ class EnemyEventListener {
     suspend fun onDifficultyChange(
         callback: (Float) -> Unit
     ) {
-        EventBus.events
-            .toAnalytics()
-            .collect { event ->
-                if (event is EnemyAnalyticsEvent.DifficultyDistribution) {
-                    callback(event.currentDifficulty)
+        with(EnemyEventUtils) {
+            EventBus.events
+                .toAnalytics()
+                .collect { event ->
+                    if (event is EnemyAnalyticsEvent.DifficultyDistribution) {
+                        callback(event.currentDifficulty)
+                    }
                 }
-            }
+        }
     }
 }
 

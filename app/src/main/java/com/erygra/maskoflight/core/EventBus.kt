@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** GameEvent — الأحداث المركزية في اللعبة */
-sealed class GameEvent {
+open class GameEvent {
 
     // ─── أحداث اللاعب ────────────────────────────────────────────────────
 
@@ -284,6 +284,183 @@ sealed class GameEvent {
 
     object BossMusicStarted : GameEvent()
     object BossMusicEnded : GameEvent()
+
+    sealed class Enemy : GameEvent() {
+        data class Spawned(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val x: Float,
+            val y: Float,
+            val level: Int = 1,
+            val rank: com.erygra.maskoflight.enemy.EnemyRank = com.erygra.maskoflight.enemy.EnemyRank.NORMAL,
+            val spawnSource: com.erygra.maskoflight.enemy.SpawnSource = com.erygra.maskoflight.enemy.SpawnSource.SPAWN_POINT
+        ) : Enemy()
+
+        data class Despawned(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val reason: com.erygra.maskoflight.enemy.DespawnReason
+        ) : Enemy()
+
+        data class StateChanged(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val oldState: com.erygra.maskoflight.enemy.EnemyState,
+            val newState: com.erygra.maskoflight.enemy.EnemyState,
+            val timestamp: Long = System.currentTimeMillis()
+        ) : Enemy()
+
+        data class PlayerDetected(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val playerX: Float,
+            val playerY: Float,
+            val detectionMethod: com.erygra.maskoflight.enemy.DetectionMethod = com.erygra.maskoflight.enemy.DetectionMethod.VISION,
+            val alertLevel: com.erygra.maskoflight.enemy.AlertLevel = com.erygra.maskoflight.enemy.AlertLevel.COMBAT
+        ) : Enemy()
+
+        data class PlayerLost(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val timeSinceLastSeen: Long
+        ) : Enemy()
+
+        data class AttackStarted(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val attackName: String,
+            val targetX: Float = 0f,
+            val targetY: Float = 0f
+        ) : Enemy()
+
+        data class AttackExecuted(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val attackName: String,
+            val damage: Float,
+            val hitPlayer: Boolean = false
+        ) : Enemy()
+
+        data class DamageDealt(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val damage: Float,
+            val attackType: com.erygra.maskoflight.enemy.AttackType,
+            val isCritical: Boolean = false
+        ) : Enemy()
+
+        data class DamageTaken(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val damage: Float,
+            val source: String,
+            val remainingHp: Float,
+            val wasParried: Boolean = false,
+            val wasBackstab: Boolean = false
+        ) : Enemy()
+
+        data class Died(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val killedBy: String,
+            val level: Int,
+            val rank: com.erygra.maskoflight.enemy.EnemyRank,
+            val x: Float,
+            val y: Float,
+            val survivalTime: Long,
+            val damageDealt: Float,
+            val damageTaken: Float
+        ) : Enemy()
+
+        data class ProjectileSpawned(
+            val enemyId: String,
+            val projectileType: String,
+            val x: Float,
+            val y: Float,
+            val velocityX: Float,
+            val velocityY: Float,
+            val damage: Float
+        ) : Enemy()
+
+        data class Summoned(
+            val summonerId: String,
+            val summonType: com.erygra.maskoflight.enemy.EnemyType,
+            val x: Float,
+            val y: Float,
+            val count: Int = 1
+        ) : Enemy()
+
+        data class GroupFormed(
+            val groupId: String,
+            val leaderType: com.erygra.maskoflight.enemy.EnemyType?,
+            val memberCount: Int,
+            val formationType: com.erygra.maskoflight.enemy.FormationType
+        ) : Enemy()
+
+        data class GroupDisbanded(
+            val groupId: String,
+            val reason: String
+        ) : Enemy()
+
+        data class WaveStarted(
+            val waveNumber: Int,
+            val enemyCount: Int,
+            val isBossWave: Boolean
+        ) : Enemy()
+
+        data class WaveCompleted(
+            val waveNumber: Int,
+            val isBossWave: Boolean,
+            val completionTime: Long = System.currentTimeMillis(),
+            val enemiesKilled: Int = 0
+        ) : Enemy()
+
+        data class StatusEffectApplied(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val effectType: com.erygra.maskoflight.enemy.EnemyEffectType,
+            val duration: Long,
+            val source: String
+        ) : Enemy()
+
+        data class StatusEffectRemoved(
+            val enemyId: String,
+            val enemyType: com.erygra.maskoflight.enemy.EnemyType,
+            val effectType: com.erygra.maskoflight.enemy.EnemyEffectType,
+            val wasExpired: Boolean
+        ) : Enemy()
+    }
+
+    sealed class Boss : GameEvent() {
+        data class PhaseTransitionStarted(
+            val bossId: String,
+            val bossType: com.erygra.maskoflight.enemy.EnemyType,
+            val fromPhase: Int,
+            val toPhase: Int,
+            val phaseName: String
+        ) : Boss()
+
+        data class PhaseChanged(
+            val bossId: String,
+            val bossType: com.erygra.maskoflight.enemy.EnemyType,
+            val phaseNumber: Int,
+            val phaseName: String,
+            val remainingHpPercent: Float
+        ) : Boss()
+
+        data class EnvironmentalAttack(
+            val bossId: String,
+            val bossType: com.erygra.maskoflight.enemy.EnemyType,
+            val attackName: String,
+            val durationMs: Long
+        ) : Boss()
+        
+        data class BossEnvironmentalAttack(
+            val bossId: String,
+            val bossType: com.erygra.maskoflight.enemy.EnemyType,
+            val attackName: String
+        ) : Boss()
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

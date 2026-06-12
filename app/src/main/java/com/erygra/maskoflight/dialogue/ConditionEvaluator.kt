@@ -68,11 +68,11 @@ class ConditionEvaluator {
         }
         
         registerFunction("min") { args ->
-            args.filterIsInstance<Number>().minOrNull()?.toDouble() ?: 0.0
+            args.filterIsInstance<Number>().map { it.toDouble() }.minOrNull() ?: 0.0
         }
         
         registerFunction("max") { args ->
-            args.filterIsInstance<Number>().maxOrNull()?.toDouble() ?: 0.0
+            args.filterIsInstance<Number>().map { it.toDouble() }.maxOrNull() ?: 0.0
         }
         
         registerFunction("sqrt") { args ->
@@ -202,7 +202,6 @@ class ConditionEvaluator {
         return when {
             trimmed.equals("true", ignoreCase = true) -> true
             trimmed.equals("false", ignoreCase = true) -> false
-            trimmed.equals("null", ignoreCase = true) -> null
             trimmed.toIntOrNull() != null -> trimmed.toInt()
             trimmed.toDoubleOrNull() != null -> trimmed.toDouble()
             trimmed.startsWith("\"") && trimmed.endsWith("\"") -> {

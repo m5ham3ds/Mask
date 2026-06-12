@@ -1835,3 +1835,5 @@ private fun PlayerStateManager.updateStats(stats: PlayerStats) {
 private fun PlayerStateManager.removeEffectByType(type: EffectType) {
     // Implementation في PlayerStateManager
 }
+
+class InventorySystem(val repository: com.erygra.maskoflight.data.repository.InventoryRepository)

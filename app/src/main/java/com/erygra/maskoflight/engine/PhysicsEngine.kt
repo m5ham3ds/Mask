@@ -1265,12 +1265,12 @@ object PhysicsEngine {
     fun applyKnockback(
         body: PhysicsBody,
         sourcePosition: Vector2D,
-        force: Float = PhysicsConfig.KNOCKBACK_BASE,
+        force: Float = com.erygra.maskoflight.core.CombatConfig.KNOCKBACK_BASE,
         isHeavy: Boolean = false
     ): PhysicsBody {
         val direction = (body.center - sourcePosition).normalized
-        val knockbackForce = if (isHeavy) PhysicsConfig.KNOCKBACK_HEAVY else force
-        val airMultiplier = if (!body.isGrounded) PhysicsConfig.KNOCKBACK_AIR_MULTIPLIER else 1f
+        val knockbackForce = if (isHeavy) com.erygra.maskoflight.core.CombatConfig.KNOCKBACK_HEAVY else force
+        val airMultiplier = if (!body.isGrounded) com.erygra.maskoflight.core.CombatConfig.KNOCKBACK_AIR_MULTIPLIER else 1f
 
         val knockbackVelocity = direction * knockbackForce * airMultiplier
 
@@ -1278,7 +1278,7 @@ object PhysicsEngine {
             velocity = knockbackVelocity,
             isKnockedBack = true,
             knockbackFrames = 20,
-            invincibilityFrames = PhysicsConfig.INVINCIBILITY_AFTER_HIT_FRAMES
+            invincibilityFrames = com.erygra.maskoflight.core.PlayerConfig.INVINCIBILITY_AFTER_HIT_FRAMES
         )
     }
 

@@ -6,6 +6,7 @@ import com.erygra.maskoflight.core.GameEvent
 import com.erygra.maskoflight.engine.PhysicsEngine
 import com.erygra.maskoflight.engine.CombatEngine
 import com.erygra.maskoflight.engine.ParticleEngine
+import com.erygra.maskoflight.engine.ParticleType
 import com.erygra.maskoflight.player.PlayerStateManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -276,7 +277,7 @@ class EnemyManager(
                     is GameEvent.Enemy.Died -> handleEnemyDeath(event)
                     is GameEvent.Enemy.DamageDealt -> handleEnemyDamageDealt(event)
                     is GameEvent.Enemy.DamageTaken -> handleEnemyDamageTaken(event)
-                    is GameEvent.Player.Died -> handlePlayerDeath()
+                    is GameEvent.PlayerDied -> handlePlayerDeath()
                     else -> {}
                 }
             }
@@ -434,7 +435,7 @@ class EnemyManager(
         type: EnemyType,
         x: Float,
         y: Float,
-        level: Int = playerStateManager.getStats().level,
+        level: Int = playerStateManager.currentState.stats.level,
         rank: EnemyRank? = null
     ): Enemy? {
         // Check max active enemies
@@ -443,14 +444,14 @@ class EnemyManager(
         }
         
         // Get or create enemy
-        val enemy = if (enableObjectPooling) {
+        val rawEnemy = if (enableObjectPooling) {
             getFromPool(type, x, y, level, rank)
         } else {
             createEnemy(type, x, y, level, rank)
         }
         
         // Scale enemy based on difficulty
-        scaleEnemy(enemy)
+        val enemy = scaleEnemy(rawEnemy)
         
         // Register with systems
         aiManager.registerEnemy(enemy)
@@ -526,36 +527,36 @@ class EnemyManager(
         level: Int,
         rank: EnemyRank?
     ): Enemy {
-        val definition = EnemyDatabase.getDefinition(type)
+        val definition = EnemyDatabase.getEnemy(type) ?: throw IllegalArgumentException("Unknown enemy type: $type")
         val actualRank = rank ?: definition.rank
         
-        return EnemyFactory.createEnemy(
+        val enemy = EnemyFactory.createEnemy(
             type = type,
             x = x,
             y = y,
             level = level
-        ).let { enemy ->
-            if (actualRank != definition.rank) {
-                // Adjust stats for different rank
-                val rankMultiplier = when (actualRank) {
-                    EnemyRank.NORMAL -> 1.0f
-                    EnemyRank.ELITE -> 1.5f
-                    EnemyRank.MINIBOSS -> 2.0f
-                    EnemyRank.BOSS -> 3.0f
-                }
-                
-                enemy.copy(
-                    definition = definition.copy(rank = actualRank),
-                    stats = enemy.stats.copy(
-                        maxHp = enemy.stats.maxHp * rankMultiplier,
-                        currentHp = enemy.stats.maxHp * rankMultiplier,
-                        damage = enemy.stats.damage * rankMultiplier,
-                        defense = enemy.stats.defense * rankMultiplier
-                    )
-                )
-            } else {
-                enemy
+        ) ?: throw IllegalStateException("Failed to create enemy: $type")
+        
+        return if (actualRank != definition.rank) {
+            // Adjust stats for different rank
+            val rankMultiplier = when (actualRank) {
+                EnemyRank.NORMAL -> 1.0f
+                EnemyRank.ELITE -> 1.5f
+                EnemyRank.MINIBOSS -> 2.0f
+                EnemyRank.BOSS -> 3.0f
             }
+            
+            enemy.copy(
+                definition = definition.copy(rank = actualRank),
+                stats = enemy.stats.copy(
+                    maxHp = (enemy.stats.maxHp * rankMultiplier).toInt(),
+                    currentHp = (enemy.stats.maxHp * rankMultiplier).toInt(),
+                    damage = (enemy.stats.damage * rankMultiplier).toInt(),
+                    defense = (enemy.stats.defense * rankMultiplier).toInt()
+                )
+            )
+        } else {
+            enemy
         }
     }
     
@@ -563,16 +564,18 @@ class EnemyManager(
      * تدريج العدو حسب الصعوبة
      * Scale enemy based on difficulty
      */
-    private fun scaleEnemy(enemy: Enemy) {
-        if (!enableDynamicDifficulty) return
+    private fun scaleEnemy(enemy: Enemy): Enemy {
+        if (!enableDynamicDifficulty) return enemy
         
         val multiplier = difficultyScaling.getDifficultyMultiplier()
         
-        enemy.stats = enemy.stats.copy(
-            maxHp = enemy.stats.maxHp * multiplier,
-            currentHp = enemy.stats.maxHp * multiplier,
-            damage = enemy.stats.damage * multiplier,
-            defense = enemy.stats.defense * multiplier
+        return enemy.copy(
+            stats = enemy.stats.copy(
+                maxHp = (enemy.stats.maxHp * multiplier).toInt(),
+                currentHp = (enemy.stats.maxHp * multiplier).toInt(),
+                damage = (enemy.stats.damage * multiplier).toInt(),
+                defense = (enemy.stats.defense * multiplier).toInt()
+            )
         )
     }
     
@@ -603,7 +606,7 @@ class EnemyManager(
                 this.position.y = y
                 this.level = level
                 this.spawnPoint = Pair(x, y)
-                this.stats.currentHp = this.stats.maxHp
+                this.stats = this.stats.copy(currentHp = this.stats.maxHp)
                 this.currentState = EnemyState.IDLE
                 this.activeEffects.clear()
                 this.customData.clear()
@@ -729,7 +732,7 @@ class EnemyManager(
             }
             
             SpawnPattern.BEHIND -> {
-                val isFacingRight = playerStateManager.getPosition().isFacingRight
+                val isFacingRight = playerStateManager.currentState.position.facingRight
                 val behindX = if (isFacingRight) playerPos.x - radius else playerPos.x + radius
                 Pair(behindX, playerPos.y)
             }
@@ -755,11 +758,8 @@ class EnemyManager(
                 )
                 
                 // Emit portal particle effect
-                particleEngine.emit(
-                    type = ParticleType.PORTAL,
-                    x = pos.first,
-                    y = pos.second,
-                    count = 20
+                particleEngine.emitSanctuaryLight(
+                    com.erygra.maskoflight.engine.Vector2D(pos.first, pos.second)
                 )
                 
                 pos
@@ -808,7 +808,7 @@ class EnemyManager(
         return spawnPoint.conditions.all { condition ->
             when (condition) {
                 is SpawnCondition.PlayerLevelRange -> {
-                    val playerLevel = playerStateManager.getStats().level
+                    val playerLevel = playerStateManager.currentState.stats.level
                     playerLevel in condition.minLevel..condition.maxLevel
                 }
                 is SpawnCondition.TimeOfDay -> {

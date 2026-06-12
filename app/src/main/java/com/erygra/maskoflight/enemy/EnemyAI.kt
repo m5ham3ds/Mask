@@ -513,7 +513,7 @@ class EnemyStateMachine(
             
             EnemyState.RETURNING -> {
                 returnPath = null
-                healthBeforeReturn = enemy.stats.currentHp
+                healthBeforeReturn = enemy.stats.currentHp.toFloat()
             }
             
             EnemyState.DEAD -> {
@@ -763,12 +763,12 @@ class EnemyStateMachine(
         
         // Jump if blocked
         if (position.isOnWall && position.isGrounded) {
-            position.velocityY = -GameConfig.PhysicsConfig.JUMP_VELOCITY
+            position.velocityY = com.erygra.maskoflight.core.PhysicsConfig.JUMP_FORCE
         }
         
         // Try to increase distance
         val distance = enemy.distanceTo(playerPos.x, playerPos.y)
-        if (distance > config.aggroRange * 1.5f) {
+        if (distance > enemy.definition.aggroRange * 1.5f) {
             // Safe distance reached, stop fleeing
             EventBus.emit(GameEvent.Enemy.StateChanged(
                 enemyId = enemy.id,
@@ -826,7 +826,7 @@ class EnemyStateMachine(
         // Regenerate health slowly
         if (enemy.definition.regeneratesHealth) {
             val regenAmount = enemy.stats.maxHp * 0.01f * deltaTime // 1% per second
-            enemy.heal(regenAmount)
+            enemy.heal(regenAmount.toInt())
         }
         
         // Check if reached spawn
@@ -966,24 +966,36 @@ class EnemyStateMachine(
                 val correctDirection = (dx > 0) == enemyPos.isFacingRight
                 
                 if (distance <= attack.range && correctDirection) {
-                    val damage = combatEngine.calculateDamage(
-                        baseDamage = attack.damage,
-                        attackerStats = enemy.stats,
-                        defenderStats = playerStateManager.getStats(),
-                        attackType = attack.type,
-                        canCrit = false
-                    )
+                    val damage = attack.damage
                     
                     playerStateManager.takeDamage(
-                        amount = damage.finalDamage,
-                        source = "Enemy_${enemy.definition.type}",
-                        knockbackX = if (enemyPos.isFacingRight) attack.knockbackForce else -attack.knockbackForce,
-                        knockbackY = -attack.knockbackForce * 0.5f
+                        damage = damage,
+                        source = "Enemy_${enemy.definition.type}"
+                    )
+                    
+                    playerStateManager.updatePosition(
+                        velocityX = if (enemyPos.isFacingRight) attack.knockback else -attack.knockback,
+                        velocityY = -attack.knockback * 0.5f
                     )
                     
                     // Apply status effects
                     attack.statusEffects.forEach { effect ->
-                        playerStateManager.addEffect(effect)
+                        val efType = try {
+                            com.erygra.maskoflight.player.EffectType.valueOf(effect.uppercase())
+                        } catch (e: Exception) {
+                            null
+                        }
+                        if (efType != null) {
+                            playerStateManager.addEffect(
+                                com.erygra.maskoflight.player.Effect(
+                                    type = efType,
+                                    strength = 1f,
+                                    duration = 2000L,
+                                    remaining = 2000L,
+                                    source = "Enemy_${enemy.definition.type}"
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -1000,7 +1012,7 @@ class EnemyStateMachine(
                     y = enemyPos.y - 16f,
                     velocityX = cos(angle) * attack.projectileSpeed,
                     velocityY = sin(angle) * attack.projectileSpeed,
-                    damage = attack.damage
+                    damage = attack.damage.toFloat()
                 ))
             }
             
@@ -1008,19 +1020,16 @@ class EnemyStateMachine(
                 // Damage all in radius
                 val distance = enemy.distanceTo(playerPos.x, playerPos.y)
                 if (distance <= attack.aoeRadius) {
-                    val damage = combatEngine.calculateDamage(
-                        baseDamage = attack.damage,
-                        attackerStats = enemy.stats,
-                        defenderStats = playerStateManager.getStats(),
-                        attackType = attack.type,
-                        canCrit = false
-                    )
+                    val damage = attack.damage
                     
                     playerStateManager.takeDamage(
-                        amount = damage.finalDamage,
-                        source = "Enemy_${enemy.definition.type}_AOE",
-                        knockbackX = if (playerPos.x > enemyPos.x) attack.knockbackForce else -attack.knockbackForce,
-                        knockbackY = -attack.knockbackForce
+                        damage = damage,
+                        source = "Enemy_${enemy.definition.type}_AOE"
+                    )
+                    
+                    playerStateManager.updatePosition(
+                        velocityX = if (playerPos.x > enemyPos.x) attack.knockback else -attack.knockback,
+                        velocityY = -attack.knockback
                     )
                 }
             }
@@ -1030,11 +1039,11 @@ class EnemyStateMachine(
                 val distance = enemy.distanceTo(playerPos.x, playerPos.y)
                 if (distance <= attack.range) {
                     playerStateManager.addEffect(
-                        com.erygra.maskoflight.player.PlayerEffect(
+                        com.erygra.maskoflight.player.Effect(
                             type = com.erygra.maskoflight.player.EffectType.STUNNED,
                             duration = 2000L,
-                            value = 0f,
-                            sourceAbility = "Enemy_Grab"
+                            remaining = 2000L,
+                            source = "Enemy_Grab"
                         )
                     )
                 }
@@ -1052,7 +1061,7 @@ class EnemyStateMachine(
             enemyId = enemy.id,
             enemyType = enemy.definition.type,
             attackName = attack.name,
-            damage = attack.damage
+            damage = attack.damage.toFloat()
         ))
     }
     
@@ -1087,7 +1096,7 @@ class EnemyStateMachine(
         
         // Jump if node requires it
         if (currentNode.requiresJump && position.isGrounded && config.canJumpWhileChasing) {
-            position.velocityY = -GameConfig.PhysicsConfig.JUMP_VELOCITY
+            position.velocityY = com.erygra.maskoflight.core.PhysicsConfig.JUMP_FORCE
         }
     }
     
@@ -1430,16 +1439,9 @@ class EnemyDetectionSystem(
         val distance = enemy.distanceTo(playerX, playerY)
         if (distance > config.hearingRange) return false
         
-        // Check if player is making noise
-        val playerState = playerStateManager.getActionState()
-        val isNoisy = when (playerState) {
-            com.erygra.maskoflight.player.PlayerActionState.RUNNING,
-            com.erygra.maskoflight.player.PlayerActionState.JUMPING,
-            com.erygra.maskoflight.player.PlayerActionState.LANDING,
-            com.erygra.maskoflight.player.PlayerActionState.ATTACKING,
-            com.erygra.maskoflight.player.PlayerActionState.DASHING -> true
-            else -> false
-        }
+        // Check if player is making noise (airborne or moving fast)
+        val isNoisy = playerStateManager.currentState.position.isAirborne || 
+                kotlin.math.abs(playerStateManager.currentState.position.velocityX) > 200f
         
         return isNoisy
     }
@@ -1469,7 +1471,7 @@ class EnemyDetectionSystem(
  * Group behavior coordinator
  */
 class GroupBehaviorSystem {
-    private val groups = mutableMapOf<String, GroupData>()
+    val groups = mutableMapOf<String, GroupData>()
     
     /**
      * إنشاء أو الانضمام لمجموعة
@@ -1495,7 +1497,8 @@ class GroupBehaviorSystem {
         EventBus.emit(GameEvent.Enemy.GroupFormed(
             groupId = groupId,
             leaderType = leader?.definition?.type,
-            memberCount = enemies.size
+            memberCount = enemies.size,
+            formationType = formationType
         ))
         
         return group
@@ -1735,7 +1738,8 @@ class BossAIController(
                 bossId = enemy.id,
                 bossType = enemy.definition.type,
                 phaseNumber = currentPhaseIndex,
-                phaseName = nextPhase.name
+                phaseName = nextPhase.name,
+                remainingHpPercent = enemy.stats.currentHp.toFloat() / enemy.stats.maxHp.toFloat()
             ))
         }
     }
@@ -1745,9 +1749,7 @@ class BossAIController(
      * Apply phase modifiers to stats
      */
     private fun applyPhaseModifiers(phase: BossPhase) {
-        // Speed
-        enemy.definition.chaseSpeed *= phase.speedMultiplier
-        
+        // Speed (handled by states and movement speed modifiers)
         // Damage (would need to modify base stats or attack values)
         // Defense
         // etc.
@@ -1836,7 +1838,8 @@ class BossAIController(
         EventBus.emit(GameEvent.Boss.EnvironmentalAttack(
             bossId = enemy.id,
             bossType = enemy.definition.type,
-            attackName = attackName
+            attackName = attackName,
+            durationMs = 3000L
         ))
     }
     

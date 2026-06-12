@@ -363,7 +363,7 @@ abstract class GameDatabase : RoomDatabase() {
     suspend fun checkIntegrity(): Boolean {
         return try {
             val db = openHelper.writableDatabase
-            val cursor: Cursor = db.query("PRAGMA integrity_check", null)
+            val cursor: Cursor = db.query("PRAGMA integrity_check", emptyArray())
             
             cursor.use {
                 if (it.moveToFirst()) {

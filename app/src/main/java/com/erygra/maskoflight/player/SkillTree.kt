@@ -1430,3 +1430,5 @@ fun calculateLevelFromXP(xp: Int): Int {
     
     return level - 1
 }
+
+class SkillTree
