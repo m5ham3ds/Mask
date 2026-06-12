@@ -3,7 +3,7 @@ package com.erygra.maskoflight.data.dao
 import androidx.room.*
 import com.erygra.maskoflight.data.entities.ItemEntity
 import com.erygra.maskoflight.player.ItemType
-import com.erygra.maskoflight.player.Rarity
+import com.erygra.maskoflight.player.ItemRarity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -201,7 +201,7 @@ interface InventoryDao {
      * الحصول على العناصر حسب الندرة
      * Get items by rarity
      * 
-     * @param rarity الندرة / Rarity
+     * @param rarity الندرة / ItemRarity
      * @return قائمة العناصر / Items list
      */
     @Query("""
@@ -209,7 +209,7 @@ interface InventoryDao {
         WHERE rarity = :rarity 
         ORDER BY level DESC
     """)
-    suspend fun getItemsByRarity(rarity: Rarity): List<ItemEntity>
+    suspend fun getItemsByRarity(rarity: ItemRarity): List<ItemEntity>
 
     /**
      * الحصول على العناصر حسب الفئة
@@ -446,11 +446,11 @@ interface InventoryDao {
      * الحصول على عدد العناصر حسب الندرة
      * Get item count by rarity
      * 
-     * @param rarity الندرة / Rarity
+     * @param rarity الندرة / ItemRarity
      * @return عدد العناصر / Item count
      */
     @Query("SELECT COUNT(*) FROM items WHERE rarity = :rarity")
-    suspend fun getItemCountByRarity(rarity: Rarity): Int
+    suspend fun getItemCountByRarity(rarity: ItemRarity): Int
 
     // ═══════════════════════════════════════════════════════════════════════
     // Delete Operations - عمليات الحذف
@@ -587,6 +587,7 @@ interface InventoryDao {
         GROUP BY type 
         ORDER BY count DESC
     """)
+    @MapInfo(keyColumn = "type", valueColumn = "count")
     suspend fun getItemDistributionByType(): Map<String, Int>
 
     /**
@@ -601,6 +602,7 @@ interface InventoryDao {
         GROUP BY rarity 
         ORDER BY rarity DESC
     """)
+    @MapInfo(keyColumn = "rarity", valueColumn = "count")
     suspend fun getItemDistributionByRarity(): Map<String, Int>
 
     /**

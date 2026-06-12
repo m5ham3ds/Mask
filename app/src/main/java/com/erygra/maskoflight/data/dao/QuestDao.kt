@@ -634,7 +634,8 @@ interface QuestDao {
         ORDER BY count DESC 
         LIMIT 1
     """)
-    suspend fun getRegionWithMostQuests(): Map<String, Any>?
+    @MapInfo(keyColumn = "region", valueColumn = "count")
+    suspend fun getRegionWithMostQuests(): Map<String, Int>
 
     /**
      * الحصول على متوسط تقدم المهام النشطة
@@ -657,6 +658,7 @@ interface QuestDao {
         GROUP BY type 
         ORDER BY count DESC
     """)
+    @MapInfo(keyColumn = "type", valueColumn = "count")
     suspend fun getQuestDistributionByType(): Map<String, Int>
 
     /**
@@ -671,5 +673,6 @@ interface QuestDao {
         GROUP BY status 
         ORDER BY count DESC
     """)
+    @MapInfo(keyColumn = "status", valueColumn = "count")
     suspend fun getQuestDistributionByStatus(): Map<String, Int>
 }

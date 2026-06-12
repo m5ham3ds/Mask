@@ -23,6 +23,12 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.awaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erygra.maskoflight.player.PlayerState
+import com.erygra.maskoflight.player.PlayerStateAbility
 import com.erygra.maskoflight.player.AbilityType
 import com.erygra.maskoflight.world.RegionType
 import kotlinx.coroutines.delay
@@ -223,7 +230,7 @@ fun GameHUD(
         if (hudState.showMinimap && hudState.minimapPosition == MinimapPosition.TOP_RIGHT) {
             Minimap(
                 currentRegion = currentRegion,
-                playerPosition = Offset(playerState.x, playerState.y),
+                playerPosition = Offset(playerState.position.x, playerState.position.y),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp)
@@ -297,8 +304,8 @@ fun PlayerStatsBar(
     Column(modifier = modifier) {
         // Health Bar
         ErytStatBar(
-            current = playerState.currentHP,
-            max = playerState.maxHP,
+            current = playerState.stats.hp.toFloat(),
+            max = playerState.stats.maxHp.toFloat(),
             label = "HP",
             color = ErytColor.VitalityRed,
             height = 28.dp,
@@ -323,8 +330,8 @@ fun PlayerStatsBar(
         
         // Energy Bar
         ErytStatBar(
-            current = playerState.currentEnergy,
-            max = playerState.maxEnergy,
+            current = playerState.stats.energy.toFloat(),
+            max = playerState.stats.maxEnergy.toFloat(),
             label = "EN",
             color = ErytColor.EchoesBlue,
             height = 28.dp,
@@ -355,7 +362,7 @@ fun PlayerStatsBar(
         ) {
             // Memory Fragments
             MemoryFragmentDisplay(
-                count = playerState.memoryFragments,
+                count = playerState.stats.memoryFragments,
                 modifier = Modifier.weight(1f)
             )
             
@@ -363,7 +370,7 @@ fun PlayerStatsBar(
             
             // Forgetfulness Meter
             ForgetfulnessMeter(
-                fm = playerState.forgetfulness,
+                fm = playerState.stats.forgetfulnessMeter,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -377,21 +384,21 @@ fun PlayerStatsBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "المستوى ${playerState.level}",
+                    text = "المستوى ${playerState.stats.level}",
                     color = ErytColor.BlightGold,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
                 
                 ErytProgressBar(
-                    progress = playerState.xp.toFloat() / playerState.xpToNextLevel.toFloat(),
+                    progress = playerState.stats.xp.toFloat() / playerState.stats.xpToNextLevel.toFloat(),
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
                     foregroundColor = ErytColor.BlightGold,
                     height = 6.dp
                 )
                 
                 Text(
-                    text = "${playerState.xp}/${playerState.xpToNextLevel}",
+                    text = "${playerState.stats.xp}/${playerState.stats.xpToNextLevel}",
                     color = ErytColor.OutlineGray,
                     fontSize = 12.sp
                 )
@@ -826,12 +833,12 @@ fun AbilityCooldownBar(
 fun AbilityIcon(
     abilityState: AbilityState,
     modifier: Modifier = Modifier,
-    size: Dp = 56.dp,
+    iconSize: Dp = 56.dp,
     onClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
-            .size(size)
+            .size(iconSize)
             .shadow(4.dp, CircleShape)
             .background(
                 color = ErytColor.SurfaceDark,
@@ -854,7 +861,7 @@ fun AbilityIcon(
         // Ability icon (placeholder - would use actual icons)
         Text(
             text = getAbilityEmoji(abilityState.type),
-            fontSize = (size.value * 0.5f).sp
+            fontSize = (iconSize.value * 0.5f).sp
         )
         
         // Cooldown overlay
@@ -866,14 +873,14 @@ fun AbilityIcon(
                     startAngle = -90f,
                     sweepAngle = sweepAngle,
                     useCenter = true,
-                    size = size
+                    size = this.size
                 )
             }
             
             Text(
                 text = "${(abilityState.cooldownRemaining * 10).toInt()}",
                 color = ErytColor.RadianceWhite,
-                fontSize = (size.value * 0.3f).sp,
+                fontSize = (iconSize.value * 0.3f).sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -917,10 +924,6 @@ fun AbilityIcon(
  */
 private fun getAbilityEmoji(type: AbilityType): String {
     return when (type) {
-        AbilityType.MEMORY_PULSE -> "💥"
-        AbilityType.ECHO_RECALL -> "👤"
-        AbilityType.MASK_SHARD -> "💎"
-        AbilityType.BORROWED_NAMES -> "📝"
         AbilityType.DASH -> "⚡"
         AbilityType.WALL_JUMP -> "🧗"
         else -> "?"
@@ -948,7 +951,7 @@ fun ItemSlotBar(
     ) {
         for (i in 0 until maxSlots) {
             ItemSlot(
-                itemId = playerState.equippedItems.getOrNull(i),
+                itemId = playerState.equippedAccessories.getOrNull(i),
                 slotNumber = i + 1,
                 size = (56.dp * iconSize)
             )

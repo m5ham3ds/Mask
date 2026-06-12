@@ -135,6 +135,9 @@ dependencies {
 
     // ─── Security ───────────────────────────────────────────────────────
     implementation(libs.androidx.security.crypto)
+    
+    // ─── Logging ────────────────────────────────────────────────────────
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     // ─── Testing ─────────────────────────────────────────────────────────
     testImplementation(libs.junit)

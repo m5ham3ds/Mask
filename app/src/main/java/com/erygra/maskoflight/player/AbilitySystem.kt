@@ -104,6 +104,15 @@ enum class AbilityState {
 }
 
 /**
+ * فروع المهارات
+ */
+enum class SkillBranch(val nameAr: String) {
+    RADIANCE("المشع"),
+    MEMORY("الذاكرة"),
+    VOID("الفراغ")
+}
+
+/**
  * تعريف القدرة
  */
 data class Ability(

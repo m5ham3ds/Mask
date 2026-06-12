@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -234,8 +236,8 @@ fun DialogueScreen(
                 is DialogueEffect.ScreenShake -> {
                     repeat(10) {
                         screenShakeOffset = Offset(
-                            x = (-effect.intensity..effect.intensity).random(),
-                            y = (-effect.intensity..effect.intensity).random()
+                            x = (kotlin.random.Random.nextFloat() * 2 - 1) * effect.intensity,
+                            y = (kotlin.random.Random.nextFloat() * 2 - 1) * effect.intensity
                         )
                         delay(50)
                     }
@@ -250,7 +252,7 @@ fun DialogueScreen(
                     AudioEngine.playSFX(effect.soundId)
                 }
                 is DialogueEffect.ChangeMusic -> {
-                    AudioEngine.playMusic(effect.musicId)
+                    AudioEngine.instance?.playRegionMusic(effect.musicId)
                 }
                 else -> {
                     // Other effects handled by game logic

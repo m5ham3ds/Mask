@@ -140,6 +140,17 @@ data class AudioState(
  */
 class AudioEngine(private val context: Context) {
 
+    companion object {
+        var instance: AudioEngine? = null
+        fun playSFX(sfxId: String, volume: Float = 1f) {
+            instance?.playSfx(sfxId, volume)
+        }
+    }
+
+    init {
+        instance = this
+    }
+
     private val scope = CoroutineScope(Dispatchers.Main)
 
     // ─── حالة الصوت ──────────────────────────────────────────────────────

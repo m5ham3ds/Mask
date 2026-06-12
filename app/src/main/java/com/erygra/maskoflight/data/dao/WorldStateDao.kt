@@ -475,7 +475,8 @@ interface WorldStateDao {
         ORDER BY count DESC 
         LIMIT 1
     """)
-    suspend fun getMostVisitedRegion(): Map<String, Any>?
+    @MapInfo(keyColumn = "currentRegion", valueColumn = "count")
+    suspend fun getMostVisitedRegion(): Map<String, Int>
 
     /**
      * الحصول على إجمالي المسافة المقطوعة

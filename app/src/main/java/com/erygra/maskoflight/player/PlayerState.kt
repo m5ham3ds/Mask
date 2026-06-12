@@ -126,35 +126,8 @@ data class PlayerStats(
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
- * أنواع القدرات القابلة للفتح
+ * أنواع القدرات القابلة للفتح (imported from AbilitySystem.kt)
  */
-enum class AbilityType {
-    // حركة أساسية (XP-based)
-    LEDGE_GRAB,          // تسلق الحواف
-    ROPE_SWING,          // التأرجح على الحبال
-    WALL_JUMP,           // القفز الجداري
-    BURST_LEAP,          // قفزة انفجارية
-    
-    // قتال أساسي (XP-based)
-    PRECISION_STRIKE,    // ضربة دقيقة
-    PARRY_COUNTER,       // صد ورد
-    DASH,                // اندفاع سريع
-    DODGE_ROLL,          // لفة تفادي
-    
-    // قدرات قوية (MF-based)
-    MEMORY_PULSE_SMALL,  // نبضة ذاكرة صغيرة
-    MEMORY_PULSE_LARGE,  // نبضة ذاكرة كبيرة
-    ECHO_RECALL,         // استدعاء صدى
-    MASK_SHARD_BLAST,    // انفجار شظية القناع
-    BORROWED_NAMES,      // أسماء مستعارة
-    MEMORY_RESTORATION,  // استعادة ذاكرة كاملة
-    
-    // قدرات متقدمة
-    DOUBLE_JUMP,         // قفزة مزدوجة
-    AIR_DASH,            // اندفاع جوي
-    GROUND_SLAM,         // ضربة أرضية
-    SHADOW_STEP,         // خطوة ظل (تليبورت قصير)
-}
 
 /**
  * معلومات قدرة واحدة
@@ -167,7 +140,7 @@ enum class AbilityType {
  * @property usesRemaining عدد الاستخدامات المتبقية (للقدرات المحدودة)
  * @property maxUses الحد الأقصى للاستخدامات
  */
-data class Ability(
+data class PlayerStateAbility(
     val type: AbilityType,
     val unlocked: Boolean = false,
     val level: Int = 1,
@@ -195,12 +168,12 @@ data class Ability(
  * @property abilities خريطة القدرات المفتوحة وحالاتها
  */
 data class PlayerAbilities(
-    val abilities: Map<AbilityType, Ability> = emptyMap()
+    val abilities: Map<AbilityType, PlayerStateAbility> = emptyMap()
 ) {
     /**
      * الحصول على قدرة معينة
      */
-    fun getAbility(type: AbilityType): Ability? = abilities[type]
+    fun getAbility(type: AbilityType): PlayerStateAbility? = abilities[type]
 
     /**
      * هل القدرة مفتوحة؟
@@ -1054,7 +1027,7 @@ class PlayerStateManager {
      * @param maxUses الحد الأقصى للاستخدامات (-1 = غير محدود)
      */
     fun unlockAbility(abilityType: AbilityType, maxCooldown: Long = 0L, maxUses: Int = -1) {
-        val newAbility = Ability(
+        val newAbility = PlayerStateAbility(
             type = abilityType,
             unlocked = true,
             level = 1,

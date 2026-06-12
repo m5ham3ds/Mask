@@ -76,6 +76,29 @@ sealed class GameEvent {
         val fromRegionId: String?
     ) : GameEvent()
 
+    // ─── أحداث الواجهة المختلقة ──────────────────────────────────────────
+
+    object Inventory {
+        data class SatchelUpgraded(val newLevel: Int) : GameEvent()
+    }
+
+    object World {
+        data class FastTravel(val pointId: String) : GameEvent()
+    }
+
+    object Shop {
+        data class ItemPurchased(val itemId: String, val quantity: Int) : GameEvent()
+        data class ItemSold(val itemId: String, val quantity: Int) : GameEvent()
+        data class ItemBoughtBack(val itemId: String, val quantity: Int) : GameEvent()
+    }
+
+    object Skill {
+        data class SkillUpgraded(val skillId: String, val newLevel: Int) : GameEvent()
+        data class SkillUnlocked(val skillId: String) : GameEvent()
+        data class SkillsRespecced(val reason: String) : GameEvent()
+        data class SkillPointsEarned(val amount: Int) : GameEvent()
+    }
+
     // ─── أحداث القتال ────────────────────────────────────────────────────
 
     data class EnemyDamaged(
@@ -137,10 +160,25 @@ sealed class GameEvent {
     // ─── أحداث المهام ────────────────────────────────────────────────────
 
     data class QuestStarted(val questId: String) : GameEvent()
+    data class QuestAccepted(val questId: String) : GameEvent()
+    data class QuestRejected(val questId: String) : GameEvent()
+    data class QuestAbandoned(val questId: String) : GameEvent()
+    data class QuestReady(val questId: String) : GameEvent()
 
     data class QuestStepCompleted(
         val questId: String,
         val stepIndex: Int
+    ) : GameEvent()
+
+    data class ObjectiveCompleted(
+        val questId: String,
+        val objectiveId: String
+    ) : GameEvent()
+
+    data class ObjectiveProgress(
+        val questId: String,
+        val objectiveId: String,
+        val progress: Int
     ) : GameEvent()
 
     data class QuestCompleted(

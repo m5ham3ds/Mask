@@ -29,8 +29,6 @@ import androidx.compose.ui.window.Dialog
 import com.erygra.maskoflight.core.EventBus
 import com.erygra.maskoflight.core.GameEvent
 import com.erygra.maskoflight.engine.AudioEngine
-import com.erygra.maskoflight.player.SkillTree
-import com.erygra.maskoflight.player.SkillNode
 import com.erygra.maskoflight.player.SkillBranch
 import kotlinx.coroutines.launch
 import kotlin.math.cos

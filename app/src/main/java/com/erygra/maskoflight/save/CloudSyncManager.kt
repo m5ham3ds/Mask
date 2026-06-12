@@ -1,6 +1,7 @@
 package com.erygra.maskoflight.save
 
 import com.erygra.maskoflight.network.NetworkModule
+import com.erygra.maskoflight.network.models.UploadSaveRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -144,12 +145,17 @@ class CloudSyncManager {
             )
             
             if (result.isSuccessful && result.body() != null) {
-                val cloudData = result.body()!!.data
+                val cloudData = result.body()?.data
+                
+                if (cloudData == null) {
+                    addError("Cloud data is null")
+                    return@try null
+                }
                 
                 // التحقق من الـ checksum
                 if (!verifyChecksum(cloudData.saveData, cloudData.checksum)) {
                     addError("Checksum verification failed")
-                    return null
+                    return@try null
                 }
                 
                 val saveData = SaveSerializer.deserialize(cloudData.saveData)

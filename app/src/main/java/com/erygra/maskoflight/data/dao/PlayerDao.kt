@@ -23,6 +23,12 @@ import kotlinx.coroutines.flow.Flow
  * @since 1.0.0
  * ═══════════════════════════════════════════════════════════════════════════
  */
+data class LevelAndXP(val level: Int, val currentXP: Int, val xpToNextLevel: Int)
+data class HealthAndEnergy(val currentHealth: Float, val maxHealth: Float, val currentEnergy: Float, val maxEnergy: Float)
+data class PlayerPositionData(val positionX: Float, val positionY: Float, val currentRegion: String)
+data class PlayerCurrencies(val gold: Int, val gems: Int, val lightFragments: Int, val darkEssence: Int)
+data class PlayerStatistics(val totalPlayTime: Long, val deathCount: Int, val totalDamageDealt: Long, val totalDamageTaken: Long, val distanceTraveled: Long, val jumpCount: Int, val dashCount: Int)
+
 @Dao
 interface PlayerDao {
 
@@ -386,7 +392,7 @@ interface PlayerDao {
         FROM players 
         WHERE playerId = :playerId
     """)
-    suspend fun getLevelAndXP(playerId: String): Map<String, Int>?
+    suspend fun getLevelAndXP(playerId: String): LevelAndXP?
 
     /**
      * الحصول على الصحة والطاقة فقط
@@ -399,7 +405,7 @@ interface PlayerDao {
         FROM players 
         WHERE playerId = :playerId
     """)
-    suspend fun getHealthAndEnergy(playerId: String): Map<String, Float>?
+    suspend fun getHealthAndEnergy(playerId: String): HealthAndEnergy?
 
     /**
      * الحصول على الموقع فقط
@@ -412,7 +418,7 @@ interface PlayerDao {
         FROM players 
         WHERE playerId = :playerId
     """)
-    suspend fun getPosition(playerId: String): Map<String, Any>?
+    suspend fun getPosition(playerId: String): PlayerPositionData?
 
     /**
      * الحصول على العملات فقط
@@ -425,7 +431,7 @@ interface PlayerDao {
         FROM players 
         WHERE playerId = :playerId
     """)
-    suspend fun getCurrencies(playerId: String): Map<String, Int>?
+    suspend fun getCurrencies(playerId: String): PlayerCurrencies?
 
     /**
      * الحصول على الإحصائيات فقط
@@ -439,7 +445,7 @@ interface PlayerDao {
         FROM players 
         WHERE playerId = :playerId
     """)
-    suspend fun getStatistics(playerId: String): Map<String, Long>?
+    suspend fun getStatistics(playerId: String): PlayerStatistics?
 
     // ═══════════════════════════════════════════════════════════════════════
     // Delete Operations - عمليات الحذف
@@ -596,7 +602,8 @@ interface PlayerDao {
         ORDER BY count DESC 
         LIMIT 1
     """)
-    suspend fun getMostVisitedRegion(): Map<String, Any>?
+    @MapInfo(keyColumn = "currentRegion", valueColumn = "count")
+    suspend fun getMostVisitedRegion(): Map<String, Int>
 
     /**
      * الحصول على توزيع المستويات
@@ -610,5 +617,6 @@ interface PlayerDao {
         GROUP BY level 
         ORDER BY level ASC
     """)
+    @MapInfo(keyColumn = "level", valueColumn = "count")
     suspend fun getLevelDistribution(): Map<Int, Int>
 }

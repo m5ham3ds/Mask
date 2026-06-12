@@ -18,6 +18,9 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
@@ -60,7 +63,11 @@ import kotlin.math.sin
 object ErytColor {
     val VoidPrimary = Color(0xFF1A1A2E)
     val SurfaceDark = Color(0xFF16213E)
+    val SurfaceLight = Color(0xFF2B3A5A)
+    val TextPrimary = Color(0xFFE0E0E0)
     val BlightGold = Color(0xFFD4AF37)
+    val BlightRed = Color(0xFFE53935)
+    val MemoryAqua = Color(0xFF00BFA5)
     val EchoesBlue = Color(0xFF4A90E2)
     val VitalityRed = Color(0xFFE74C3C)
     val RadianceWhite = Color(0xFFF8F9FA)
@@ -77,19 +84,35 @@ object ErytColor {
 // Buttons
 // ══════════════════════════════════════════════════════════════════════════════
 
+enum class ErytButtonVariant {
+    PRIMARY,
+    SECONDARY,
+    DANGER
+}
+
 /**
  * زر أساسي مخصص
  * Custom primary button
  */
 @Composable
 fun ErytButton(
-    text: String,
+    text: String = "",
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    color: Color = ErytColor.BlightGold,
-    textColor: Color = ErytColor.VoidPrimary,
-    icon: (@Composable () -> Unit)? = null
+    variant: ErytButtonVariant = ErytButtonVariant.PRIMARY,
+    color: Color = when(variant) {
+        ErytButtonVariant.PRIMARY -> ErytColor.BlightGold
+        ErytButtonVariant.SECONDARY -> ErytColor.SurfaceLight
+        ErytButtonVariant.DANGER -> Color(0xFFC62828)
+    },
+    textColor: Color = when(variant) {
+        ErytButtonVariant.PRIMARY -> ErytColor.VoidPrimary
+        ErytButtonVariant.SECONDARY -> ErytColor.TextPrimary
+        ErytButtonVariant.DANGER -> Color.White
+    },
+    icon: (@Composable () -> Unit)? = null,
+    content: (@Composable RowScope.() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -127,17 +150,25 @@ fun ErytButton(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            icon?.let {
-                it()
-                Spacer(modifier = Modifier.width(8.dp))
+            if (content != null) {
+                CompositionLocalProvider(LocalContentColor provides (if (enabled) textColor else textColor.copy(alpha = 0.5f))) {
+                    content()
+                }
+            } else {
+                icon?.let {
+                    it()
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                if (text.isNotEmpty()) {
+                    Text(
+                        text = text,
+                        color = if (enabled) textColor else textColor.copy(alpha = 0.5f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-            Text(
-                text = text,
-                color = if (enabled) textColor else textColor.copy(alpha = 0.5f),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }

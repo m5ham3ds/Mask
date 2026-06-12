@@ -3,7 +3,7 @@ package com.erygra.maskoflight.data.database
 import androidx.room.TypeConverter
 import com.erygra.maskoflight.player.Ability
 import com.erygra.maskoflight.player.ItemType
-import com.erygra.maskoflight.player.Rarity
+import com.erygra.maskoflight.player.ItemRarity
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
@@ -194,6 +194,72 @@ object Converters {
         }
     }
 
+    @TypeConverter
+    fun fromStringFloatMap(map: Map<String, Float>?): String {
+        return if (map == null || map.isEmpty()) {
+            "{}"
+        } else {
+            json.encodeToString(map)
+        }
+    }
+
+    @TypeConverter
+    fun toStringFloatMap(value: String?): Map<String, Float> {
+        return if (value.isNullOrBlank() || value == "{}") {
+            emptyMap()
+        } else {
+            try {
+                json.decodeFromString(value)
+            } catch (e: Exception) {
+                emptyMap()
+            }
+        }
+    }
+
+    @TypeConverter
+    fun fromStringLongMap(map: Map<String, Long>?): String {
+        return if (map == null || map.isEmpty()) {
+            "{}"
+        } else {
+            json.encodeToString(map)
+        }
+    }
+
+    @TypeConverter
+    fun toStringLongMap(value: String?): Map<String, Long> {
+        return if (value.isNullOrBlank() || value == "{}") {
+            emptyMap()
+        } else {
+            try {
+                json.decodeFromString(value)
+            } catch (e: Exception) {
+                emptyMap()
+            }
+        }
+    }
+
+    @TypeConverter
+    fun fromStringMapMapInt(map: Map<String, Map<String, Int>>?): String {
+        return if (map == null || map.isEmpty()) {
+            "{}"
+        } else {
+            json.encodeToString(map)
+        }
+    }
+
+    @TypeConverter
+    fun toStringMapMapInt(value: String?): Map<String, Map<String, Int>> {
+        return if (value.isNullOrBlank() || value == "{}") {
+            emptyMap()
+        } else {
+            try {
+                json.decodeFromString(value)
+            } catch (e: Exception) {
+                emptyMap()
+            }
+        }
+    }
+
     /**
      * تحويل خريطة النص-Boolean إلى JSON
      * Convert string-boolean map to JSON
@@ -313,82 +379,36 @@ object Converters {
     }
 
     /**
-     * تحويل Rarity إلى نص
-     * Convert Rarity to string
+     * تحويل ItemRarity إلى نص
+     * Convert ItemRarity to string
      * 
-     * @param rarity الندرة / Rarity
+     * @param rarity الندرة / ItemRarity
      * @return النص / String
      */
     @TypeConverter
-    fun fromRarity(rarity: Rarity?): String {
-        return rarity?.name ?: Rarity.COMMON.name
+    fun fromRarity(rarity: ItemRarity?): String {
+        return rarity?.name ?: ItemRarity.COMMON.name
     }
 
     /**
-     * تحويل النص إلى Rarity
-     * Convert string to Rarity
+     * تحويل النص إلى ItemRarity
+     * Convert string to ItemRarity
      * 
      * @param value النص / String
-     * @return الندرة / Rarity
+     * @return الندرة / ItemRarity
      */
     @TypeConverter
-    fun toRarity(value: String?): Rarity {
+    fun toRarity(value: String?): ItemRarity {
         return try {
-            Rarity.valueOf(value ?: Rarity.COMMON.name)
+            ItemRarity.valueOf(value ?: ItemRarity.COMMON.name)
         } catch (e: Exception) {
-            Rarity.COMMON
+            ItemRarity.COMMON
         }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
     // Complex Object Converters - محولات الكائنات المعقدة
     // ═══════════════════════════════════════════════════════════════════════
-
-    /**
-     * تحويل قائمة Abilities إلى JSON
-     * Convert Abilities list to JSON
-     * 
-     * @param abilities قائمة القدرات / Abilities list
-     * @return نص JSON / JSON string
-     */
-    @TypeConverter
-    fun fromAbilityList(abilities: List<Ability>?): String {
-        return if (abilities == null || abilities.isEmpty()) {
-            "[]"
-        } else {
-            try {
-                // تحويل إلى قائمة أسماء فقط
-                // Convert to names list only
-                val namesList = abilities.map { it.name }
-                json.encodeToString(namesList)
-            } catch (e: Exception) {
-                "[]"
-            }
-        }
-    }
-
-    /**
-     * تحويل JSON إلى قائمة أسماء القدرات
-     * Convert JSON to ability names list
-     * 
-     * Note: يتم تحميل القدرات الكاملة من AbilitySystem
-     * Full abilities are loaded from AbilitySystem
-     * 
-     * @param value نص JSON / JSON string
-     * @return قائمة الأسماء / Names list
-     */
-    @TypeConverter
-    fun toAbilityNamesList(value: String?): List<String> {
-        return if (value.isNullOrBlank() || value == "[]") {
-            emptyList()
-        } else {
-            try {
-                json.decodeFromString(value)
-            } catch (e: Exception) {
-                emptyList()
-            }
-        }
-    }
 
     /**
      * تحويل قائمة Map معقدة إلى JSON

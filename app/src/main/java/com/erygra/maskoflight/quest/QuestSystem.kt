@@ -129,7 +129,7 @@ class QuestSystem {
         _questsProgress.value = _questsProgress.value + (questId to progress)
         
         // إرسال حدث
-        EventBus.emit(EventBus.Event.QuestAccepted(questId))
+        EventBus.emit(GameEvent.QuestAccepted(questId))
         
         Timber.d("Quest accepted: $questId")
         return true
@@ -166,7 +166,7 @@ class QuestSystem {
         _questsProgress.value = _questsProgress.value - questId
         _rejectedQuests.value = _rejectedQuests.value + questId
         
-        EventBus.emit(EventBus.Event.QuestRejected(questId))
+        EventBus.emit(GameEvent.QuestRejected(questId))
         Timber.d("Quest rejected: $questId")
         
         return true
@@ -185,7 +185,7 @@ class QuestSystem {
         _activeQuests.value = _activeQuests.value.filter { it.id != questId }
         _questsProgress.value = _questsProgress.value - questId
         
-        EventBus.emit(EventBus.Event.QuestAbandoned(questId))
+        EventBus.emit(GameEvent.QuestAbandoned(questId))
         Timber.d("Quest abandoned: $questId")
         
         return true
@@ -224,10 +224,10 @@ class QuestSystem {
         
         // التحقق من إكمال الهدف
         if (newProgress >= objective.targetValue) {
-            EventBus.emit(EventBus.Event.ObjectiveCompleted(questId, objectiveId))
+            EventBus.emit(GameEvent.ObjectiveCompleted(questId, objectiveId))
             Timber.d("Objective completed: $questId - $objectiveId")
         } else {
-            EventBus.emit(EventBus.Event.ObjectiveProgress(questId, objectiveId, newProgress))
+            EventBus.emit(GameEvent.ObjectiveProgress(questId, objectiveId, newProgress))
         }
         
         // التحقق من إكمال جميع الأهداف
@@ -340,7 +340,7 @@ class QuestSystem {
             
             _pendingQuests.value = _pendingQuests.value + questId
             
-            EventBus.emit(EventBus.Event.QuestReady(questId))
+            EventBus.emit(GameEvent.QuestReady(questId))
             Timber.d("Quest marked as pending: $questId")
         }
     }
@@ -376,7 +376,7 @@ class QuestSystem {
         _questsProgress.value = _questsProgress.value + (questId to completedProgress)
         
         // إرسال حدث
-        EventBus.emit(EventBus.Event.QuestCompleted(questId))
+        EventBus.emit(GameEvent.QuestCompleted(questId, quest.rewards.xp, quest.rewards.coins))
         
         Timber.d("Quest completed: $questId")
         
