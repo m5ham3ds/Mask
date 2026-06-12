@@ -458,7 +458,7 @@ class HazardManager(
         
         // Play warning sounds
         if (hazard.warningTypes.contains(WarningType.SOUND_CUE)) {
-            audioEngine.playSFX(getWarningSoundId(hazard.type))
+            audioEngine.playSfx(getWarningSoundId(hazard.type))
         }
     }
     

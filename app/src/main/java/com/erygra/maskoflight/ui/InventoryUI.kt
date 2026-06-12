@@ -41,6 +41,7 @@ import com.erygra.maskoflight.core.EventBus
 import com.erygra.maskoflight.core.GameEvent
 import com.erygra.maskoflight.engine.AudioEngine
 import com.erygra.maskoflight.player.AbilityType
+import com.erygra.maskoflight.player.Rarity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -70,19 +71,9 @@ enum class ItemCategory(
 /**
  * مستويات الندرة
  * Rarity Levels
+ * Typealias for compatibility
  */
-enum class ItemRarity(
-    val nameEn: String,
-    val nameAr: String,
-    val color: Color,
-    val glowIntensity: Float
-) {
-    COMMON("Common", "عادي", Color.Gray, 0.3f),
-    UNCOMMON("Uncommon", "غير شائع", Color(0xFF2ECC71), 0.5f),
-    RARE("Rare", "نادر", Color(0xFF3498DB), 0.7f),
-    EPIC("Epic", "ملحمي", Color(0xFF9B59B6), 0.85f),
-    LEGENDARY("Legendary", "أسطوري", Color(0xFFFFD700), 1.0f)
-}
+typealias ItemRarity = Rarity
 
 /**
  * أنواع التأثيرات

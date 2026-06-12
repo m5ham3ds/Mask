@@ -3,7 +3,7 @@ package com.erygra.maskoflight.data.dao
 import androidx.room.*
 import com.erygra.maskoflight.data.entities.ItemEntity
 import com.erygra.maskoflight.player.ItemType
-import com.erygra.maskoflight.player.ItemRarity
+import com.erygra.maskoflight.player.Rarity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -209,7 +209,7 @@ interface InventoryDao {
         WHERE rarity = :rarity 
         ORDER BY level DESC
     """)
-    suspend fun getItemsByRarity(rarity: ItemRarity): List<ItemEntity>
+    suspend fun getItemsByRarity(rarity: Rarity): List<ItemEntity>
 
     /**
      * الحصول على العناصر حسب الفئة
@@ -450,7 +450,7 @@ interface InventoryDao {
      * @return عدد العناصر / Item count
      */
     @Query("SELECT COUNT(*) FROM items WHERE rarity = :rarity")
-    suspend fun getItemCountByRarity(rarity: ItemRarity): Int
+    suspend fun getItemCountByRarity(rarity: Rarity): Int
 
     // ═══════════════════════════════════════════════════════════════════════
     // Delete Operations - عمليات الحذف

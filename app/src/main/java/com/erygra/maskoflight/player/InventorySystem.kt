@@ -72,15 +72,9 @@ enum class ItemType {
 
 /**
  * ندرة العنصر / Rarity
+ // Typealias for compatibility
  */
-enum class Rarity {
-    COMMON,      // شائع (أبيض)
-    UNCOMMON,    // غير شائع (أخضر)
-    RARE,        // نادر (أزرق)
-    EPIC,        // ملحمي (بنفسجي)
-    LEGENDARY,   // أسطوري (ذهبي)
-    UNIQUE       // فريد (برتقالي)
-}
+typealias ItemRarity = Rarity
 
 /**
  * فئة العنصر (للتصنيف في الواجهة)
