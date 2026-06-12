@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.erygra.maskoflight.player.ItemType
-import com.erygra.maskoflight.player.ItemRarity
+import com.erygra.maskoflight.player.Rarity
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -102,7 +102,7 @@ data class ItemEntity(
      * Rarity
      */
     @ColumnInfo(name = "rarity")
-    val rarity: ItemRarity,
+    val rarity: Rarity,
 
     /**
      * التصنيف (للتنظيم)

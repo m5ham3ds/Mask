@@ -1,6 +1,7 @@
 package com.erygra.maskoflight.data.database
 
 import android.content.Context
+import android.database.Cursor
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -361,10 +362,8 @@ abstract class GameDatabase : RoomDatabase() {
      */
     suspend fun checkIntegrity(): Boolean {
         return try {
-            val cursor = openHelper.writableDatabase.rawQuery(
-                "PRAGMA integrity_check",
-                null
-            )
+            val db = openHelper.writableDatabase
+            val cursor: Cursor = db.query("PRAGMA integrity_check", null)
             
             cursor.use {
                 if (it.moveToFirst()) {

@@ -149,13 +149,13 @@ class CloudSyncManager {
                 
                 if (cloudData == null) {
                     addError("Cloud data is null")
-                    return@try null
+                    return null
                 }
                 
                 // التحقق من الـ checksum
                 if (!verifyChecksum(cloudData.saveData, cloudData.checksum)) {
                     addError("Checksum verification failed")
-                    return@try null
+                    return null
                 }
                 
                 val saveData = SaveSerializer.deserialize(cloudData.saveData)

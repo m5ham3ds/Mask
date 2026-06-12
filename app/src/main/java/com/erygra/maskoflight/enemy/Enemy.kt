@@ -1,7 +1,7 @@
 package com.erygra.maskoflight.enemy
 
 import com.erygra.maskoflight.core.GameConfig
-import com.erygra.maskoflight.world.GameRegion
+import com.erygra.maskoflight.world.RegionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -200,13 +200,13 @@ data class EnemyStats(
  * موقع العدو
  */
 data class EnemyPosition(
-    val x: Float,
-    val y: Float,
-    val velocityX: Float = 0f,
-    val velocityY: Float = 0f,
-    val isFacingRight: Boolean = true,
-    val isGrounded: Boolean = false,
-    val isOnWall: Boolean = false
+    var x: Float,
+    var y: Float,
+    var velocityX: Float = 0f,
+    var velocityY: Float = 0f,
+    var isFacingRight: Boolean = true,
+    var isGrounded: Boolean = false,
+    var isOnWall: Boolean = false
 )
 
 /**

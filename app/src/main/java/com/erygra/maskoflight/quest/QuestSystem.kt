@@ -266,7 +266,7 @@ class QuestSystem {
         val updatedProgress = questProgress.copy(objectives = updatedObjectives)
         _questsProgress.value = _questsProgress.value + (questId to updatedProgress)
         
-        EventBus.emit(EventBus.Event.ObjectiveProgress(questId, objectiveId, newProgress))
+        EventBus.emit(GameEvent.ObjectiveProgress(questId, objectiveId, newProgress))
         
         // التحقق من إكمال جميع الأهداف
         if (areAllObjectivesCompleted(questId)) {

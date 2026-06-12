@@ -63,7 +63,28 @@ enum class ParticleType {
     COIN_SPARKLE,       // بريق العملة
     LEVEL_UP_BURST,     // انفجار ترقية المستوى
     SANCTUARY_LIGHT,    // ضوء نقطة التفتيش
-    DEATH_DISSOLVE      // تلاشي عند الموت
+    DEATH_DISSOLVE,      // تلاشي عند الموت
+    
+    // ─── أنواع إضافية للمناطق ───────────────────────────────────────────
+    ASH,
+    SMOKE,
+    DUST,
+    PAPER_SCRAP,
+    CLOUD,
+    FEATHER,
+    WIND_GUST,
+    SNOW,
+    ICE_CRYSTAL,
+    AURORA,
+    BUBBLE,
+    STEAM,
+    OIL_DRIP,
+    FOG,
+    SPORE,
+    FIREFLY,
+    LIGHT_RAY,
+    SPARKLE,
+    VOID_PARTICLE
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

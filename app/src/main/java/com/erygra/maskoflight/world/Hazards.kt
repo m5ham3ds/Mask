@@ -7,7 +7,7 @@ import com.erygra.maskoflight.core.EventBus
 import com.erygra.maskoflight.core.GameEvent
 import com.erygra.maskoflight.engine.ParticleEngine
 import com.erygra.maskoflight.engine.AudioEngine
-import com.erygra.maskoflight.player.PlayerEffectType
+import com.erygra.maskoflight.player.EffectType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,76 +39,8 @@ import kotlin.math.sin
  */
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Hazard Types
+// Hazard Models
 // ══════════════════════════════════════════════════════════════════════════════
-
-/**
- * أنواع المخاطر البيئية
- * Environmental hazard categories
- */
-enum class HazardType {
-    // ══════ Physical Hazards ══════
-    /** أشواك ثابتة - Static spikes */
-    SPIKES,
-    /** أشواك قابلة للسحب - Retractable spikes */
-    SPIKES_RETRACTABLE,
-    /** شفرة منشار دوارة - Rotating saw blade */
-    SAW_BLADE,
-    /** كاسحة ساحقة - Crushing press */
-    CRUSHER,
-    /** منصة ساقطة - Falling platform */
-    FALLING_PLATFORM,
-    /** أرضية منهارة - Collapsing floor */
-    COLLAPSING_FLOOR,
-    /** شفرة متأرجحة - Swinging blade */
-    SWINGING_BLADE,
-    /** فخ سهام - Arrow trap */
-    ARROW_TRAP,
-    
-    // ══════ Elemental Hazards ══════
-    /** نار - Fire */
-    FIRE,
-    /** حمم بركانية - Lava */
-    LAVA,
-    /** نافورة حمم - Lava geyser */
-    LAVA_GEYSER,
-    /** غاز سام - Poison gas */
-    POISON_GAS,
-    /** ماء سام - Poison water */
-    POISON_WATER,
-    /** كهرباء - Electricity */
-    ELECTRICITY,
-    /** حقل كهربائي - Electric field */
-    ELECTRIC_FIELD,
-    /** جليد - Ice spikes */
-    ICE,
-    /** ماء متجمد - Freezing water */
-    FREEZING_WATER,
-    
-    // ══════ Environmental Hazards ══════
-    /** تيار هوائي - Wind current */
-    WIND_CURRENT,
-    /** تيار مائي - Water current */
-    WATER_CURRENT,
-    /** صخور ساقطة - Falling rocks */
-    FALLING_ROCKS,
-    /** انهيار ثلجي - Avalanche */
-    AVALANCHE,
-    /** أشواك نباتية - Thorns */
-    THORNS,
-    /** رمال متحركة - Quicksand */
-    QUICKSAND,
-    
-    // ══════ Void/Special Hazards ══════
-    /** منطقة الفراغ - Void zone */
-    VOID_ZONE,
-    /** استنزاف الذاكرة - Memory drain */
-    MEMORY_DRAIN,
-    /** ظلام كثيف - Darkness */
-    DARKNESS,
-    /** فساد - Corruption */
-    CORRUPTION
-}
 
 /**
  * أنماط تفعيل المخاطر
@@ -204,7 +136,7 @@ data class Hazard(
     /** اتجاه الدفع (درجات) - Knockback direction (degrees, 0 = right) */
     val knockbackDirection: Float = 180f,
     /** تأثير الحالة - Status effect to apply */
-    val statusEffect: PlayerEffectType? = null,
+    val statusEffect: EffectType? = null,
     /** مدة التأثير (ms) - Effect duration */
     val effectDuration: Long = 0L,
     /** نشط - Is currently active */
@@ -355,7 +287,7 @@ class HazardManager(
         currentHazards.add(hazard)
         _hazards.value = currentHazards
         
-        eventBus.emit(GameEvent.World.HazardRegistered(hazard.id, hazard.type, hazard.region))
+        EventBus.emit(GameEvent.World.HazardRegistered(hazard.id, hazard.type, hazard.region))
     }
     
     /**
@@ -366,7 +298,7 @@ class HazardManager(
         val hazard = _hazards.value.find { it.id == hazardId } ?: return
         _hazards.value = _hazards.value.filter { it.id != hazardId }
         
-        eventBus.emit(GameEvent.World.HazardUnregistered(hazardId, hazard.type, hazard.region))
+        EventBus.emit(GameEvent.World.HazardUnregistered(hazardId, hazard.type, hazard.region))
     }
     
     /**
@@ -620,7 +552,7 @@ class HazardManager(
         val hazard = _hazards.value.find { it.id == hazardId } ?: return
         if (!hazard.isPermanent) {
             hazard.isActive = true
-            eventBus.emit(GameEvent.World.HazardActivated(hazardId, hazard.type))
+            EventBus.emit(GameEvent.World.HazardActivated(hazardId, hazard.type))
         }
     }
     
@@ -633,7 +565,7 @@ class HazardManager(
         if (!hazard.isPermanent) {
             hazard.isActive = false
             hazard.isWarning = false
-            eventBus.emit(GameEvent.World.HazardDeactivated(hazardId, hazard.type))
+            EventBus.emit(GameEvent.World.HazardDeactivated(hazardId, hazard.type))
         }
     }
     
@@ -643,7 +575,7 @@ class HazardManager(
      */
     fun activateTrigger(triggerId: String) {
         activatedTriggers.add(triggerId)
-        eventBus.emit(GameEvent.World.TriggerActivated(triggerId))
+        EventBus.emit(GameEvent.World.TriggerActivated(triggerId))
     }
     
     /**
@@ -652,7 +584,7 @@ class HazardManager(
      */
     fun deactivateTrigger(triggerId: String) {
         activatedTriggers.remove(triggerId)
-        eventBus.emit(GameEvent.World.TriggerDeactivated(triggerId))
+        EventBus.emit(GameEvent.World.TriggerDeactivated(triggerId))
     }
     
     /**
@@ -765,7 +697,7 @@ data class HazardState(
     val damageInterval: Long,
     val knockbackForce: Float,
     val knockbackDirection: Float,
-    val statusEffect: PlayerEffectType?,
+    val statusEffect: EffectType?,
     val effectDuration: Long,
     val isActive: Boolean,
     val isPermanent: Boolean,
@@ -939,7 +871,7 @@ object RegionalHazardDatabase {
                 height = 64f,
                 damage = 10f,
                 damageInterval = 500L,
-                statusEffect = PlayerEffectType.BURNING,
+                statusEffect = EffectType.BURNING,
                 effectDuration = 3000L,
                 region = region,
                 color = Color(0xFFFF4500)
@@ -954,7 +886,7 @@ object RegionalHazardDatabase {
                 height = 64f,
                 damage = 25f,
                 damageInterval = 300L,
-                statusEffect = PlayerEffectType.BURNING,
+                statusEffect = EffectType.BURNING,
                 effectDuration = 5000L,
                 region = region,
                 color = Color(0xFFFF6347)
@@ -969,7 +901,7 @@ object RegionalHazardDatabase {
                 height = 96f,
                 damage = 20f,
                 damageInterval = 200L,
-                statusEffect = PlayerEffectType.STUNNED,
+                statusEffect = EffectType.STUNNED,
                 effectDuration = 1000L,
                 knockbackForce = 300f,
                 region = region,
@@ -985,7 +917,7 @@ object RegionalHazardDatabase {
                 height = 96f,
                 damage = 5f,
                 damageInterval = 1000L,
-                statusEffect = PlayerEffectType.POISONED,
+                statusEffect = EffectType.POISONED,
                 effectDuration = 10000L,
                 region = region,
                 color = Color(0xFF9ACD32),

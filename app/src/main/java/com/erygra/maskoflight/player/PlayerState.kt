@@ -73,7 +73,10 @@ data class PlayerStats(
     val enemiesKilled: Int = 0,
     val bossesDefeated: Int = 0,
     val secretsFound: Int = 0,
-    val playTimeMinutes: Int = 0
+    val playTimeMinutes: Int = 0,
+    val speed: Float = 5.0f,
+    val attack: Int = 10,
+    val criticalChance: Float = 0.05f
 ) {
     /**
      * نسبة HP الحالية (0.0 - 1.0)
@@ -291,7 +294,17 @@ enum class EffectType {
     FM_MILD,             // FM خفيف (4-7)
     FM_MODERATE,         // FM متوسط (8-12)
     FM_CRITICAL,         // FM حرج (13-20)
-    FM_CATASTROPHIC      // FM كارثي (20+)
+    FM_CATASTROPHIC,     // FM كارثي (20+)
+    
+    // Skill-based effects
+    LIFESTEAL,
+    ARMOR_PIERCE,
+    BERSERKER,
+    EXECUTE,
+    STUN_IMMUNE,
+    REVELATION,
+    CHARISMA,
+    ALWAYS_REMEMBERED
 }
 
 /**
@@ -613,6 +626,11 @@ class PlayerStateManager {
      */
     val currentState: PlayerState
         get() = _playerState.value
+
+    /**
+     * Get player position
+     */
+    fun getPosition(): PlayerPosition = currentState.position
 
     // ═══════════════════════════════════════════════════════════════════════════
     // Stats Manipulation

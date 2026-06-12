@@ -1,5 +1,7 @@
 package com.erygra.maskoflight.core
 
+import com.erygra.maskoflight.world.HazardType
+import com.erygra.maskoflight.world.RegionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -84,6 +86,13 @@ sealed class GameEvent {
 
     object World {
         data class FastTravel(val pointId: String) : GameEvent()
+        
+        data class HazardRegistered(val hazardId: String, val type: HazardType, val region: RegionType) : GameEvent()
+        data class HazardUnregistered(val hazardId: String, val type: HazardType, val region: RegionType) : GameEvent()
+        data class HazardActivated(val hazardId: String, val type: HazardType? = null) : GameEvent()
+        data class HazardDeactivated(val hazardId: String, val type: HazardType? = null) : GameEvent()
+        data class TriggerActivated(val triggerId: String) : GameEvent()
+        data class TriggerDeactivated(val triggerId: String) : GameEvent()
     }
 
     object Shop {
@@ -94,10 +103,16 @@ sealed class GameEvent {
 
     object Skill {
         data class SkillUpgraded(val skillId: String, val newLevel: Int) : GameEvent()
-        data class SkillUnlocked(val skillId: String) : GameEvent()
-        data class SkillsRespecced(val reason: String) : GameEvent()
+        data class SkillUnlocked(
+            val skillId: String, 
+            val skillName: String = "", 
+            val rank: Int = 1
+        ) : GameEvent()
+        data class SkillsRespecced(val reason: String = "Respec") : GameEvent()
         data class SkillPointsEarned(val amount: Int) : GameEvent()
     }
+
+    data class MechanicUnlocked(val mechanicId: String) : GameEvent()
 
     // ─── أحداث القتال ────────────────────────────────────────────────────
 

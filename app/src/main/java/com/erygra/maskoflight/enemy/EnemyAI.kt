@@ -353,7 +353,7 @@ class EnemyStateMachine(
         // Stunned state must expire
         if (currentState == EnemyState.STUNNED) {
             val stunEffect = enemy.activeEffects.find { it.type == EnemyEffectType.STUN }
-            if (stunEffect == null || stunEffect.isExpired()) {
+            if (stunEffect == null || stunEffect.isExpired) {
                 return previousState // Return to previous state
             }
             return EnemyState.STUNNED

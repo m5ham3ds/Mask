@@ -40,6 +40,7 @@ enum class ItemType {
     WEAPON_SECONDARY,    // السلاح الثانوي
     
     // الأدوات الاستهلاكية
+    CONSUMABLE,          // عنصر استهلاكي عام
     CONSUMABLE_HEALTH,   // شفاء
     CONSUMABLE_ENERGY,   // طاقة
     CONSUMABLE_BUFF,     // تعزيز مؤقت
@@ -70,9 +71,9 @@ enum class ItemType {
 }
 
 /**
- * ندرة العنصر
+ * ندرة العنصر / Rarity
  */
-enum class ItemRarity {
+enum class Rarity {
     COMMON,      // شائع (أبيض)
     UNCOMMON,    // غير شائع (أخضر)
     RARE,        // نادر (أزرق)

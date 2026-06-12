@@ -3,8 +3,8 @@ package com.erygra.maskoflight.world
 import androidx.compose.ui.graphics.Color
 import com.erygra.maskoflight.core.GameConfig
 import com.erygra.maskoflight.enemy.EnemyType
-import com.erygra.maskoflight.engine.ParticleType
-import com.erygra.maskoflight.player.AbilityType
+import com.erygra.maskoflight.engine.ParticleType.*
+import com.erygra.maskoflight.player.AbilityType.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,27 +74,9 @@ enum class WeatherType {
     GLOWING_PARTICLES  // جسيمات مضيئة
 }
 
-/**
- * أنواع المخاطر البيئية
- */
-enum class HazardType {
-    FIRE,           // نار
-    LAVA,           // حمم
-    FALLING_BOOKS,  // كتب ساقطة
-    INK_POOLS,      // برك حبر
-    FALLING,        // سقوط
-    ROPE_TRAPS,     // فخاخ حبال
-    ICE,            // جليد
-    FREEZING_WATER, // مياه متجمدة
-    WATER,          // مياه
-    ELECTRICITY,    // كهرباء
-    GEARS,          // تروس متحركة
-    POISON,         // سموم
-    THORNS,         // أشواك
-    MUD,            // طين
-    VOID,           // فراغ
-    LIGHT_BEAMS     // أشعة ضوء
-}
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI & State models
+// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * أوضاع الإضاءة

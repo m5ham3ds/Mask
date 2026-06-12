@@ -56,11 +56,17 @@ enum class SkillType {
 enum class SkillTier {
     TIER_1,     // الطبقة الأولى (متاحة من البداية)
     TIER_2,     // الطبقة الثانية (Level 5+)
-    TIER_3,     // الطبقة الثالثة (Level 10+)
-    TIER_4,     // الطبقة الرابعة (Level 15+)
-    TIER_5,     // الطبقة الخامسة (Level 20+)
+    TIER_3,     // الطبقة الثانية (Level 10+)
+    TIER_4,     // الطبقة الثالثة (Level 15+)
+    TIER_5,     // الطبقة الرابعة (Level 20+)
     ULTIMATE    // المهارات النهائية (Level 25+)
 }
+
+/**
+ * أنواع تأثيرات اللاعب الناتجة عن المهارات
+ * (ملاحظة: تم نقلها إلى EffectType في PlayerState.kt)
+ */
+// typealias PlayerEffectType = EffectType // يمكن استخدام هذا للسهولة
 
 /**
  * تعريف المهارة
@@ -83,7 +89,7 @@ data class Skill(
     
     // التأثيرات
     val statBoosts: Map<String, Float> = emptyMap(),  // stat name -> boost value
-    val effectTypes: List<PlayerEffectType> = emptyList(),
+    val effectTypes: List<EffectType> = emptyList(),
     val unlockedAbility: AbilityType? = null,
     val unlockedMechanic: String = "",  // e.g., "wall_jump", "double_jump"
     
@@ -1019,7 +1025,7 @@ class SkillTreeManager(
         // خصم التكاليف
         _availableSkillPoints.value -= skill.skillPointsCost
         if (skill.requiredMF > 0) {
-            playerStateManager.addMemoryFragments(-skill.requiredMF)
+            playerStateManager.consumeMF(skill.requiredMF)
         }
         
         // فتح/ترقية المهارة
@@ -1039,7 +1045,7 @@ class SkillTreeManager(
         updatePathSummaries()
         
         // إرسال حدث
-        eventBus.emit(GameEvent.SkillUnlocked(skillId, skill.name, newRank))
+        eventBus.emit(GameEvent.Skill.SkillUnlocked(skillId, skill.name, newRank))
         
         return SkillUnlockResult.Success(skill, newRank)
     }
@@ -1056,7 +1062,7 @@ class SkillTreeManager(
         
         // خصم التكلفة
         if (cost > 0) {
-            playerStateManager.addCurrency(-cost)
+            playerStateManager.spendCurrency(cost)
         }
         
         // إزالة جميع تأثيرات المهارات
@@ -1084,7 +1090,7 @@ class SkillTreeManager(
         // تحديث الملخصات
         updatePathSummaries()
         
-        eventBus.emit(GameEvent.SkillsRespecced)
+        eventBus.emit(GameEvent.Skill.SkillsRespecced())
         
         return true
     }
@@ -1095,7 +1101,7 @@ class SkillTreeManager(
     fun addSkillPoints(points: Int) {
         _availableSkillPoints.value += points
         _totalSkillPointsEarned.value += points
-        eventBus.emit(GameEvent.SkillPointsEarned(points))
+        eventBus.emit(GameEvent.Skill.SkillPointsEarned(points))
     }
     
     /**
@@ -1181,7 +1187,7 @@ class SkillTreeManager(
     /**
      * الحصول على جميع التأثيرات النشطة
      */
-    fun getActiveEffects(): List<PlayerEffectType> {
+    fun getActiveEffects(): List<EffectType> {
         return _playerSkills.value.values
             .filter { it.unlocked }
             .flatMap { it.skill.effectTypes }
@@ -1222,17 +1228,17 @@ class SkillTreeManager(
         }
         
         if (updatedStats != currentStats) {
-            playerStateManager.updateStats(updatedStats)
+            playerStateManager.loadState(playerStateManager.currentState.copy(stats = updatedStats))
         }
         
         // تطبيق التأثيرات السلبية
         skill.effectTypes.forEach { effectType ->
             playerStateManager.addEffect(
-                PlayerEffect(
+                Effect(
                     type = effectType,
-                    duration = Long.MAX_VALUE,  // دائم
-                    value = skill.values["lifestealPercent"] ?: 1f,
-                    sourceSkill = skill.id
+                    duration = -1,  // دائم
+                    strength = skill.values["lifestealPercent"] ?: 1f,
+                    source = skill.id
                 )
             )
         }
@@ -1269,7 +1275,7 @@ class SkillTreeManager(
         }
         
         if (updatedStats != currentStats) {
-            playerStateManager.updateStats(updatedStats)
+            playerStateManager.loadState(playerStateManager.currentState.copy(stats = updatedStats))
         }
         
         // إزالة التأثيرات
@@ -1391,9 +1397,9 @@ class SkillTreeManager(
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Extension للـ PlayerEffect لإضافة sourceSkill
+ * Extension للـ Effect لإضافة sourceSkill
  */
-private val PlayerEffect.sourceSkill: String? get() = null
+private val Effect.sourceSkill: String? get() = null
 
 /**
  * Extension للـ PlayerStateManager

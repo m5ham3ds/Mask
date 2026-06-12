@@ -70,7 +70,11 @@ enum class AbilityType {
     MEMORY_RESTORATION,
     SHADOW_STEP,
     TIME_ECHO,
-    VOID_SHIFT
+    VOID_SHIFT,
+    
+    // قدرات استكشاف خاصة
+    WATER_BREATHING,
+    CLIMB
 }
 
 /**

@@ -224,10 +224,10 @@ object EnemyConfig {
     const val BASE_XP_MINIBOSS: Int = 150
     const val BASE_XP_BOSS: Int = 500
 
-    const val BASE_COINS_COMMON: IntRange = 1..8
-    const val BASE_COINS_ELITE: IntRange = 10..25
-    const val BASE_COINS_MINIBOSS: IntRange = 30..60
-    const val BASE_COINS_BOSS: IntRange = 80..150
+    val BASE_COINS_COMMON: IntRange = 1..8
+    val BASE_COINS_ELITE: IntRange = 10..25
+    val BASE_COINS_MINIBOSS: IntRange = 30..60
+    val BASE_COINS_BOSS: IntRange = 80..150
 
     // Spawning
     const val MAX_ENEMIES_ON_SCREEN: Int = 12
@@ -411,4 +411,20 @@ object ApiConfig {
     const val BACKEND_TIMEOUT_SECONDS = 15L
     const val BACKEND_RETRY_COUNT = 3
     const val BACKEND_RETRY_DELAY_MS = 1000L
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GameConfig Wrapper — لضمان التوافق مع الكود القديم والجديد
+// ─────────────────────────────────────────────────────────────────────────────
+object GameConfig {
+    val PhysicsConfig = com.erygra.maskoflight.core.PhysicsConfig
+    val PlayerConfig = com.erygra.maskoflight.core.PlayerConfig
+    val MemoryConfig = com.erygra.maskoflight.core.MemoryConfig
+    val CombatConfig = com.erygra.maskoflight.core.CombatConfig
+    val WorldConfig = com.erygra.maskoflight.core.WorldConfig
+    val AudioConfig = com.erygra.maskoflight.core.AudioConfig
+    val UIConfig = com.erygra.maskoflight.core.UIConfig
+    val ParticleConfig = com.erygra.maskoflight.core.ParticleConfig
+    val PerformanceConfig = com.erygra.maskoflight.core.PerformanceConfig
+    val ApiConfig = com.erygra.maskoflight.core.ApiConfig
 }

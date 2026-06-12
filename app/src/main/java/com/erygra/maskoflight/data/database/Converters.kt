@@ -1,9 +1,8 @@
 package com.erygra.maskoflight.data.database
 
 import androidx.room.TypeConverter
-import com.erygra.maskoflight.player.Ability
 import com.erygra.maskoflight.player.ItemType
-import com.erygra.maskoflight.player.ItemRarity
+import com.erygra.maskoflight.player.Rarity
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
@@ -379,30 +378,30 @@ object Converters {
     }
 
     /**
-     * تحويل ItemRarity إلى نص
-     * Convert ItemRarity to string
+     * تحويل Rarity إلى نص
+     * Convert Rarity to string
      * 
-     * @param rarity الندرة / ItemRarity
+     * @param rarity الندرة / Rarity
      * @return النص / String
      */
     @TypeConverter
-    fun fromRarity(rarity: ItemRarity?): String {
-        return rarity?.name ?: ItemRarity.COMMON.name
+    fun fromRarity(rarity: Rarity?): String {
+        return rarity?.name ?: Rarity.COMMON.name
     }
 
     /**
-     * تحويل النص إلى ItemRarity
-     * Convert string to ItemRarity
+     * تحويل النص إلى Rarity
+     * Convert string to Rarity
      * 
      * @param value النص / String
-     * @return الندرة / ItemRarity
+     * @return الندرة / Rarity
      */
     @TypeConverter
-    fun toRarity(value: String?): ItemRarity {
+    fun toRarity(value: String?): Rarity {
         return try {
-            ItemRarity.valueOf(value ?: ItemRarity.COMMON.name)
+            Rarity.valueOf(value ?: Rarity.COMMON.name)
         } catch (e: Exception) {
-            ItemRarity.COMMON
+            Rarity.COMMON
         }
     }
 

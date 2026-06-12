@@ -1,6 +1,7 @@
 package com.erygra.maskoflight.dialogue
 
 import com.erygra.maskoflight.core.EventBus
+import com.erygra.maskoflight.core.GameEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -108,7 +109,7 @@ class DialogueSystem {
             val startNode = dialogueTree.getStartNode()
             if (startNode != null) {
                 displayNode(startNode)
-                EventBus.emit(EventBus.Event.DialogueStarted(npcId))
+                EventBus.emit(GameEvent.DialogueStarted(npcId))
                 Timber.d("Dialogue started with NPC: $npcId")
                 return true
             } else {
@@ -134,7 +135,7 @@ class DialogueSystem {
         currentDialogueThread = null
         
         if (npcId != null) {
-            EventBus.emit(EventBus.Event.DialogueEnded(npcId))
+            EventBus.emit(GameEvent.DialogueEnded(npcId))
             Timber.d("Dialogue ended with NPC: $npcId")
         }
     }
@@ -193,9 +194,15 @@ class DialogueSystem {
         if (choiceIndex !in choices.indices) return false
         
         val choice = choices[choiceIndex]
-        return selectChoice(choice)
+        val npcId = _currentNPC.value ?: "unknown"
+        
+        val success = selectChoice(choice)
+        if (success) {
+            EventBus.emit(GameEvent.DialogueChoiceMade(npcId, choiceIndex, choice.text))
+        }
+        return success
     }
-    
+
     /**
      * اختيار خيار مباشرة
      *
@@ -223,7 +230,6 @@ class DialogueSystem {
             val nextNode = tree.getNode(choice.nextNodeId)
             if (nextNode != null) {
                 displayNode(nextNode)
-                EventBus.emit(EventBus.Event.DialogueChoiceMade(choice.id))
                 return true
             } else {
                 Timber.w("Next node not found: ${choice.nextNodeId}")
