@@ -10,9 +10,9 @@ import com.erygra.maskoflight.data.database.GameDatabase
 import com.erygra.maskoflight.data.dao.*
 import com.erygra.maskoflight.data.repository.*
 import com.erygra.maskoflight.engine.*
-import com.erygra.maskoflight.network.GameApiService
-import com.erygra.maskoflight.network.FirebaseManager
-import com.erygra.maskoflight.network.LeaderboardApi
+import com.erygra.maskoflight.network.api.GameApiService
+import com.erygra.maskoflight.network.api.LeaderboardApi
+import com.erygra.maskoflight.network.firebase.FirebaseManager
 import com.erygra.maskoflight.network.NetworkModule
 import com.erygra.maskoflight.player.InventorySystem
 import com.erygra.maskoflight.player.SkillTree

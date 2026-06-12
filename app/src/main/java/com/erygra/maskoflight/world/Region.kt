@@ -3,8 +3,8 @@ package com.erygra.maskoflight.world
 import androidx.compose.ui.graphics.Color
 import com.erygra.maskoflight.core.GameConfig
 import com.erygra.maskoflight.enemy.EnemyType
-import com.erygra.maskoflight.engine.ParticleType.*
-import com.erygra.maskoflight.player.AbilityType.*
+import com.erygra.maskoflight.engine.ParticleType
+import com.erygra.maskoflight.player.AbilityType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
