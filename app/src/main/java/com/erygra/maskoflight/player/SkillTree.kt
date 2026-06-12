@@ -766,7 +766,7 @@ object SkillDatabase {
             requiredLevel = 6,
             requiredSkills = listOf("memory_xp_boost"),
             statBoosts = mapOf("merchantPriceReduction" to -0.10f),
-            effectTypes = listOf(PlayerEffectType.CHARISMA),
+            effectTypes = listOf(EffectType.CHARISMA),
             iconResource = "skill_charismatic",
             position = SkillPosition(2, 2)
         ),

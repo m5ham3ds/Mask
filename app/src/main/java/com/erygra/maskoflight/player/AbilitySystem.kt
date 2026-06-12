@@ -319,7 +319,7 @@ object AbilityDatabase {
             unlockXP = 200,
             cooldownMs = 2000L,
             durationMs = 200L,
-            statusEffects = listOf(PlayerEffectType.INVULNERABLE),
+            statusEffects = listOf(EffectType.INVULNERABLE),
             iconResource = "ability_dash",
             animationState = "dash",
             particleEffect = "dash_trail",
@@ -338,7 +338,7 @@ object AbilityDatabase {
             unlockXP = 200,
             cooldownMs = 1500L,
             durationMs = 400L,
-            statusEffects = listOf(PlayerEffectType.INVULNERABLE),
+            statusEffects = listOf(EffectType.INVULNERABLE),
             iconResource = "ability_dodge_roll",
             animationState = "dodge_roll",
             soundEffect = "sfx_dodge"
@@ -648,7 +648,7 @@ object AbilityDatabase {
             unlockMF = 8,
             cooldownMs = 6000L,
             castTimeMs = 200L,
-            statusEffects = listOf(PlayerEffectType.INVULNERABLE),
+            statusEffects = listOf(EffectType.INVULNERABLE),
             iconResource = "ability_shadow_step",
             animationState = "shadow_step",
             particleEffect = "shadow_teleport",
@@ -1635,7 +1635,7 @@ class AbilityManager(
         // تطبيق حصانة مؤقتة
         playerStateManager.addEffect(
             PlayerEffect(
-                type = PlayerEffectType.INVULNERABLE,
+                type = EffectType.INVULNERABLE,
                 duration = execution.ability.durationMs,
                 value = 1f
             )
@@ -1685,7 +1685,7 @@ class AbilityManager(
             // حصانة قصيرة
             playerStateManager.addEffect(
                 PlayerEffect(
-                    type = PlayerEffectType.INVULNERABLE,
+                    type = EffectType.INVULNERABLE,
                     duration = 200L,
                     value = 1f
                 )

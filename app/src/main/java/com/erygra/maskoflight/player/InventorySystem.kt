@@ -1641,7 +1641,7 @@ class InventoryManager(
                 // تأثير الشفاء سيُطبق عند الاستشفاء
                 playerStateManager.addEffect(
                     PlayerEffect(
-                        type = PlayerEffectType.HEALING_BOOST,
+                        type = EffectType.HEALING_BOOST,
                         duration = Long.MAX_VALUE,  // دائم
                         value = 0.15f
                     )
@@ -1652,7 +1652,7 @@ class InventoryManager(
                 // تأثير XP سيُطبق عند الحصول على XP
                 playerStateManager.addEffect(
                     PlayerEffect(
-                        type = PlayerEffectType.XP_BOOST,
+                        type = EffectType.XP_BOOST,
                         duration = Long.MAX_VALUE,
                         value = 0.10f
                     )
@@ -1663,7 +1663,7 @@ class InventoryManager(
                 // تأثير Cooldown سيُطبق في AbilityManager
                 playerStateManager.addEffect(
                     PlayerEffect(
-                        type = PlayerEffectType.COOLDOWN_REDUCTION,
+                        type = EffectType.COOLDOWN_REDUCTION,
                         duration = Long.MAX_VALUE,
                         value = 0.25f,
                         sourceAbility = "echo_recall"
@@ -1686,15 +1686,15 @@ class InventoryManager(
             }
             
             "root_talisman" -> {
-                playerStateManager.removeEffectByType(PlayerEffectType.HEALING_BOOST)
+                playerStateManager.removeEffectByType(EffectType.HEALING_BOOST)
             }
             
             "edda_locket" -> {
-                playerStateManager.removeEffectByType(PlayerEffectType.XP_BOOST)
+                playerStateManager.removeEffectByType(EffectType.XP_BOOST)
             }
             
             "echo_ring" -> {
-                playerStateManager.removeEffectByType(PlayerEffectType.COOLDOWN_REDUCTION)
+                playerStateManager.removeEffectByType(EffectType.COOLDOWN_REDUCTION)
             }
         }
     }
@@ -1832,6 +1832,6 @@ private fun PlayerStateManager.updateStats(stats: PlayerStats) {
     // Implementation في PlayerStateManager
 }
 
-private fun PlayerStateManager.removeEffectByType(type: PlayerEffectType) {
+private fun PlayerStateManager.removeEffectByType(type: EffectType) {
     // Implementation في PlayerStateManager
 }

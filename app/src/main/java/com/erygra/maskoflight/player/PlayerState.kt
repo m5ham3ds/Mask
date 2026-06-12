@@ -307,6 +307,8 @@ enum class PlayerEffectType {
     ALWAYS_REMEMBERED
 }
 
+typealias EffectType = PlayerEffectType
+
 /**
  * تأثير واحد نشط
  *

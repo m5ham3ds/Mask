@@ -11,6 +11,7 @@
         android:theme="@style/Theme.RemixGameBuilder">
         <activity
             android:name="com.example.MainActivity"
+
             android:exported="true"
             android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
