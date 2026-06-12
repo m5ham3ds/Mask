@@ -310,7 +310,7 @@ object SkillDatabase {
             skillPointsCost = 4,
             requiredLevel = 10,
             requiredSkills = listOf("combat_parry_unlock"),
-            effectTypes = listOf(PlayerEffectType.LIFESTEAL),
+            effectTypes = listOf(EffectType.LIFESTEAL),
             values = mapOf("lifestealPercent" to 0.05f),
             iconResource = "skill_lifesteal",
             position = SkillPosition(1, 3)
@@ -346,7 +346,7 @@ object SkillDatabase {
             skillPointsCost = 4,
             requiredLevel = 15,
             requiredSkills = listOf("combat_charged_heavy"),
-            effectTypes = listOf(PlayerEffectType.ARMOR_PIERCE),
+            effectTypes = listOf(EffectType.ARMOR_PIERCE),
             values = mapOf("armorPiercePercent" to 0.25f),
             iconResource = "skill_armor_pierce",
             position = SkillPosition(0, 4)
@@ -364,7 +364,7 @@ object SkillDatabase {
             skillPointsCost = 5,
             requiredLevel = 16,
             requiredSkills = listOf("combat_lifesteal"),
-            effectTypes = listOf(PlayerEffectType.BERSERKER),
+            effectTypes = listOf(EffectType.BERSERKER),
             values = mapOf("damageBoost" to 0.30f, "hpThreshold" to 0.30f),
             iconResource = "skill_berserker",
             position = SkillPosition(1, 4)
@@ -383,7 +383,7 @@ object SkillDatabase {
             skillPointsCost = 6,
             requiredLevel = 20,
             requiredSkills = listOf("combat_armor_pierce", "combat_berserker"),
-            effectTypes = listOf(PlayerEffectType.EXECUTE),
+            effectTypes = listOf(EffectType.EXECUTE),
             values = mapOf("executeThreshold" to 0.10f),
             iconResource = "skill_execution",
             position = SkillPosition(0, 5),
@@ -408,7 +408,7 @@ object SkillDatabase {
             statBoosts = mapOf(
                 "allCombatStats" to 0.20f
             ),
-            effectTypes = listOf(PlayerEffectType.STUN_IMMUNE),
+            effectTypes = listOf(EffectType.STUN_IMMUNE),
             iconResource = "skill_warlord",
             position = SkillPosition(0, 6),
             loreText = "The mask remembers every battle, every scar",
@@ -629,7 +629,7 @@ object SkillDatabase {
             skillPointsCost = 6,
             requiredLevel = 20,
             requiredSkills = listOf("explore_treasure_hunter"),
-            effectTypes = listOf(PlayerEffectType.REVELATION),
+            effectTypes = listOf(EffectType.REVELATION),
             values = mapOf("revealRadius" to 10f),
             iconResource = "skill_pathfinder",
             position = SkillPosition(2, 5)
@@ -901,7 +901,7 @@ object SkillDatabase {
                 "fmCap" to 10f,
                 "mfGainBonus" to 0.50f
             ),
-            effectTypes = listOf(PlayerEffectType.ALWAYS_REMEMBERED),
+            effectTypes = listOf(EffectType.ALWAYS_REMEMBERED),
             iconResource = "skill_archivist",
             position = SkillPosition(0, 6),
             loreText = "They tried to erase you. You will ensure no one is forgotten again.",

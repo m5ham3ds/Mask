@@ -152,7 +152,7 @@ data class Ability(
     val unlockMF: Int = 0,
     
     // التأثيرات
-    val statusEffects: List<PlayerEffectType> = emptyList(),
+    val statusEffects: List<EffectType> = emptyList(),
     val particleEffect: String = "",
     val soundEffect: String = "",
     
@@ -209,7 +209,7 @@ data class AbilityCombo(
     val abilities: List<AbilityType>,
     val timeWindowMs: Long,  // الوقت المسموح بين القدرات
     val bonusDamage: Int = 0,
-    val bonusEffects: List<PlayerEffectType> = emptyList(),
+    val bonusEffects: List<EffectType> = emptyList(),
     val unlockCondition: String = ""
 )
 
@@ -225,7 +225,7 @@ data class AbilityUpgrade(
     val cooldownReduction: Long = 0L,
     val energyCostReduction: Int = 0,
     val rangeIncrease: Float = 0f,
-    val newEffects: List<PlayerEffectType> = emptyList(),
+    val newEffects: List<EffectType> = emptyList(),
     val description: String = "",
     val descriptionArabic: String = ""
 )
@@ -436,7 +436,7 @@ object AbilityDatabase {
             unlockXP = 300,
             cooldownMs = 2000L,
             durationMs = 300L,  // نافذة الصد
-            statusEffects = listOf(PlayerEffectType.PARRY_WINDOW),
+            statusEffects = listOf(EffectType.PARRY_WINDOW),
             iconResource = "ability_parry",
             animationState = "parry",
             soundEffect = "sfx_parry"
@@ -498,7 +498,7 @@ object AbilityDatabase {
             knockbackForce = 250f,
             unlockXP = 300,
             cooldownMs = 5000L,
-            statusEffects = listOf(PlayerEffectType.STUN),
+            statusEffects = listOf(EffectType.STUN),
             iconResource = "ability_shield_bash",
             animationState = "shield_bash",
             soundEffect = "sfx_shield_bash"
@@ -688,7 +688,7 @@ object AbilityDatabase {
             cooldownMs = 25000L,
             durationMs = 5000L,
             castTimeMs = 500L,
-            statusEffects = listOf(PlayerEffectType.INTANGIBLE),
+            statusEffects = listOf(EffectType.INTANGIBLE),
             iconResource = "ability_void_shift",
             animationState = "void_shift",
             particleEffect = "void_form",
@@ -740,7 +740,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 500L,
             bonusDamage = 15,
-            bonusEffects = listOf(PlayerEffectType.INCREASED_CRIT_CHANCE)
+            bonusEffects = listOf(EffectType.INCREASED_CRIT_CHANCE)
         ),
         
         AbilityCombo(
@@ -753,7 +753,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 1000L,
             bonusDamage = 25,
-            bonusEffects = listOf(PlayerEffectType.AOE_AMPLIFY)
+            bonusEffects = listOf(EffectType.AOE_AMPLIFY)
         ),
         
         AbilityCombo(
@@ -765,7 +765,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 300L,
             bonusDamage = 40,
-            bonusEffects = listOf(PlayerEffectType.ARMOR_BREAK)
+            bonusEffects = listOf(EffectType.ARMOR_BREAK)
         ),
         
         AbilityCombo(
@@ -777,7 +777,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 800L,
             bonusDamage = 30,
-            bonusEffects = listOf(PlayerEffectType.LIFESTEAL)
+            bonusEffects = listOf(EffectType.LIFESTEAL)
         ),
         
         AbilityCombo(
@@ -789,7 +789,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 1200L,
             bonusDamage = 50,
-            bonusEffects = listOf(PlayerEffectType.BARRIER_PIERCE)
+            bonusEffects = listOf(EffectType.BARRIER_PIERCE)
         ),
         
         AbilityCombo(
@@ -801,7 +801,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 2000L,
             bonusDamage = 60,
-            bonusEffects = listOf(PlayerEffectType.REVELATION),
+            bonusEffects = listOf(EffectType.REVELATION),
             unlockCondition = "FM < 10"
         ),
         
@@ -816,7 +816,7 @@ object AbilityComboDatabase {
             ),
             timeWindowMs = 3000L,
             bonusDamage = 80,
-            bonusEffects = listOf(PlayerEffectType.TIME_SLOW)
+            bonusEffects = listOf(EffectType.TIME_SLOW)
         )
     )
     
@@ -864,7 +864,7 @@ object AbilityUpgradeDatabase {
                 xpCost = 1000,
                 mfCost = 1,
                 cooldownReduction = 2000L,
-                newEffects = listOf(PlayerEffectType.REVELATION),
+                newEffects = listOf(EffectType.REVELATION),
                 description = "Reduced cooldown, reveals hidden items",
                 descriptionArabic = "تقليل وقت الانتظار، يكشف العناصر المخفية"
             ),
@@ -884,7 +884,7 @@ object AbilityUpgradeDatabase {
                 xpCost = 3500,
                 mfCost = 3,
                 energyCostReduction = 0,  // يصبح بدون تكلفة طاقة
-                newEffects = listOf(PlayerEffectType.SLOW),
+                newEffects = listOf(EffectType.SLOW),
                 description = "No MF cost, slows enemies",
                 descriptionArabic = "بدون تكلفة MF، يبطئ الأعداء"
             )
@@ -923,7 +923,7 @@ object AbilityUpgradeDatabase {
                 xpCost = 4000,
                 mfCost = 3,
                 cooldownReduction = 5000L,
-                newEffects = listOf(PlayerEffectType.LIFESTEAL),
+                newEffects = listOf(EffectType.LIFESTEAL),
                 description = "Reduced cooldown, echo heals you",
                 descriptionArabic = "تقليل الانتظار، الصدى يشفيك"
             )
@@ -959,7 +959,7 @@ object AbilityUpgradeDatabase {
                 abilityType = AbilityType.DASH,
                 level = 5,
                 xpCost = 2000,
-                newEffects = listOf(PlayerEffectType.DAMAGE_ON_CONTACT),
+                newEffects = listOf(EffectType.DAMAGE_ON_CONTACT),
                 description = "Dash damages enemies on contact",
                 descriptionArabic = "الاندفاع يضر الأعداء بالتلامس"
             )
@@ -987,7 +987,7 @@ object AbilityUpgradeDatabase {
                 abilityType = AbilityType.GROUND_SLAM,
                 level = 4,
                 xpCost = 2000,
-                newEffects = listOf(PlayerEffectType.STUN),
+                newEffects = listOf(EffectType.STUN),
                 description = "Stuns enemies",
                 descriptionArabic = "يصعق الأعداء"
             ),
@@ -1033,7 +1033,7 @@ object AbilityUpgradeDatabase {
                 abilityType = AbilityType.PARRY_COUNTER,
                 level = 5,
                 xpCost = 2800,
-                newEffects = listOf(PlayerEffectType.REFLECT_PROJECTILE),
+                newEffects = listOf(EffectType.REFLECT_PROJECTILE),
                 description = "Perfect parry reflects projectiles",
                 descriptionArabic = "الصد المثالي يعكس المقذوفات"
             )
@@ -1504,7 +1504,7 @@ class AbilityManager(
         }
         
         // كشف الأسرار
-        if (ability.statusEffects.contains(PlayerEffectType.REVELATION)) {
+        if (ability.statusEffects.contains(EffectType.REVELATION)) {
             eventBus.emit(GameEvent.RevealSecrets(playerPos.x, playerPos.y, ability.aoeRadius))
         }
         
@@ -1700,7 +1700,7 @@ class AbilityManager(
         // تطبيق حالة Intangible
         playerStateManager.addEffect(
             PlayerEffect(
-                type = PlayerEffectType.INTANGIBLE,
+                type = EffectType.INTANGIBLE,
                 duration = execution.ability.durationMs,
                 value = 1f
             )
@@ -1754,7 +1754,7 @@ class AbilityManager(
         // تطبيق نافذة الصد
         playerStateManager.addEffect(
             PlayerEffect(
-                type = PlayerEffectType.PARRY_WINDOW,
+                type = EffectType.PARRY_WINDOW,
                 duration = execution.ability.durationMs,
                 value = 1f
             )
@@ -1825,11 +1825,11 @@ class AbilityManager(
         // تطبيق تأثيرات اللاعب
         val playerEffects = playerStateManager.playerState.value.effects.activeEffects
         
-        if (playerEffects.any { it.type == PlayerEffectType.DAMAGE_BOOST }) {
+        if (playerEffects.any { it.type == EffectType.DAMAGE_BOOST }) {
             damage = (damage * 1.5f).toInt()
         }
         
-        if (playerEffects.any { it.type == PlayerEffectType.CRITICAL_HIT }) {
+        if (playerEffects.any { it.type == EffectType.CRITICAL_HIT }) {
             damage = (damage * 2f).toInt()
         }
         

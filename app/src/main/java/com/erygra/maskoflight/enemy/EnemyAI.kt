@@ -1031,7 +1031,7 @@ class EnemyStateMachine(
                 if (distance <= attack.range) {
                     playerStateManager.addEffect(
                         com.erygra.maskoflight.player.PlayerEffect(
-                            type = com.erygra.maskoflight.player.PlayerEffectType.STUNNED,
+                            type = com.erygra.maskoflight.player.EffectType.STUNNED,
                             duration = 2000L,
                             value = 0f,
                             sourceAbility = "Enemy_Grab"

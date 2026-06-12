@@ -266,7 +266,7 @@ data class PlayerPosition(
 /**
  * أنواع التأثيرات
  */
-enum class EffectType {
+enum class PlayerEffectType {
     // Buffs (إيجابية)
     DAMAGE_BOOST,        // زيادة الضرر
     SPEED_BOOST,         // زيادة السرعة
